@@ -1,0 +1,6 @@
+.fontBold {
+    -fx-font-weight: bold;
+}
+.fontNormal {
+    -fx-font-weight: normal;
+}

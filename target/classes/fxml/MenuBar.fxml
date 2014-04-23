@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="425.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafxapp.controller.MainController">
+<children><TabPane prefHeight="431.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
+  <tabs>
+    <Tab text="Служебные поля">
+        <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="212.0" prefWidth="600.0">
+                <children><Label layoutX="77.0" layoutY="41.0" prefHeight="17.0" prefWidth="332.0" text="Данные о системе-инициаторе взаимодействия (Потребителе):" textAlignment="CENTER" wrapText="true" />
+                    <TextField fx:id="senderCodeFNS" layoutX="138.0" layoutY="65.0" prefHeight="22.0" prefWidth="92.0" />
+                    <Label layoutX="77.0" layoutY="105.0" prefHeight="17.0" prefWidth="319.0" text="Данные о системе-получателе сообщения (Поставщике):" textAlignment="CENTER" wrapText="true" />
+                    <Label layoutX="77.0" layoutY="175.0" prefHeight="30.0" prefWidth="403.0" text="Данные о системе, инициировавшей цепочку из нескольких запросов-ответов, объединенных единым процессом в рамках взаимодействия:" wrapText="true" />
+                    <Label layoutX="100.0" layoutY="69.0" text="Код" />
+                    <Label layoutX="269.0" layoutY="69.0" text="Наименование" />
+                    <TextField fx:id="senderNameFNS" layoutX="365.0" layoutY="65.0" prefHeight="22.0" prefWidth="92.0" />
+                    <TextField fx:id="recipientNameFNS" layoutX="365.0" layoutY="131.0" prefHeight="22.0" prefWidth="92.0" />
+                    <Label layoutX="269.0" layoutY="135.0" text="Наименование" />
+                    <Label layoutX="100.0" layoutY="135.0" text="Код" />
+                    <TextField fx:id="recipientCodeFNS" layoutX="138.0" layoutY="131.0" prefHeight="22.0" prefWidth="92.0" />
+                    <TextField fx:id="originatorCodeFNS" layoutX="138.0" layoutY="214.0" prefHeight="22.0" prefWidth="92.0" />
+                    <Label layoutX="100.0" layoutY="218.0" text="Код" />
+                    <Label layoutX="269.0" layoutY="218.0" text="Наименование" />
+                    <TextField fx:id="originatorNameFNS" layoutX="365.0" layoutY="214.0" prefHeight="22.0" prefWidth="92.0" />
+                    <Button layoutX="254.0" layoutY="283.0" mnemonicParsing="false" text="Сохранить" onAction="#handleSaveSmevFileds"/>
+                </children></AnchorPane>
+        </content>
+    </Tab>
+    <Tab text="Отправка запросов">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+          <children>
+              <Label layoutX="30.0" layoutY="28.0" prefHeight="55.0" prefWidth="310.0" text="ПФР(Сведения о страховом номере индивидуального лицевого счета (СНИЛС по данным)) " textAlignment="CENTER" wrapText="true" />
+              <TextField fx:id="addressPFR" alignment="TOP_CENTER" layoutX="25.0" layoutY="72.0" prefHeight="22.0" prefWidth="310.0" promptText="Введите адрес сервиса" />
+              <TextField fx:id="addressFNS" alignment="TOP_CENTER" layoutX="25.0" layoutY="153.0" prefHeight="22.0" prefWidth="310.0" promptText="Введите адрес сервиса" text="http://192.168.100.96:7777/gateway/services/SID0003245" />
+              <Label alignment="BASELINE_RIGHT" contentDisplay="RIGHT" layoutX="92.0" layoutY="131.0" prefHeight="22.0" prefWidth="186.0" text="ФНС(сведения из ЕГРИП/ЕГРЮЛ)" textAlignment="CENTER" wrapText="true" />
+              <Label alignment="BASELINE_RIGHT" contentDisplay="RIGHT" layoutX="112.0" layoutY="209.0" prefHeight="22.0" prefWidth="156.0" text="МВД(сведения о судимости) " textAlignment="CENTER" wrapText="true" />
+              <Button fx:id="sendRequests" layoutX="419.0" layoutY="358.0" mnemonicParsing="false" onAction="#handleSubmitSendRequests" text="Отправить запросы" />
+              <TextField fx:id="addressMVD" alignment="TOP_CENTER" layoutX="25.0" layoutY="231.0" prefHeight="22.0" prefWidth="310.0" promptText="Введите адрес сервиса" />
+              <CheckBox fx:id="checkboxPFR" layoutX="365.0" layoutY="64.0" mnemonicParsing="false" />
+              <CheckBox fx:id="checkboxMVD" layoutX="365.0" layoutY="217.0" mnemonicParsing="false" />
+              <CheckBox fx:id="checkboxFNS" layoutX="365.0" layoutY="140.0" mnemonicParsing="false" />
+              <Label layoutX="406.0" layoutY="55.0" text="готово к отправке: " />
+              <Label layoutX="408.0" layoutY="211.0" text="готово к отправке:" />
+              <Label layoutX="408.0" layoutY="135.0" text="готово к отправке:" />
+              <Label layoutX="406.0" layoutY="76.0" text="отправлено: " />
+              <Label layoutX="408.0" layoutY="237.0" text="отправлено:" />
+              <Label layoutX="408.0" layoutY="159.0" text="отправлено:" />
+              <Button layoutX="311.0" layoutY="303.0" mnemonicParsing="false" onAction="#handleFileChooser" text="Выберите файл" />
+              <Button layoutX="423.0" layoutY="303.0" mnemonicParsing="false" onAction="#handleSubmitLoadData" text="Загрузить данные" />
+              <TextField fx:id="filePath" layoutX="29.0" layoutY="303.0" onAction="#handleFileChooser" prefHeight="22.0" prefWidth="269.0" promptText="Укажите путь к файлу" text="D:\MedVed\AdapterLibrary\JavaFx_AutoSend_maven\excel.xls" /><Label fx:id="countPFRRequests" layoutX="509.0" layoutY="56.0" text="0 " /><Label fx:id="countPFRSentReq" layoutX="509.0" layoutY="76.0" text="0" /><Label fx:id="countFNSRequests" layoutX="509.0" layoutY="135.0" text="0" /><Label fx:id="countFNSSentReq" layoutX="509.0" layoutY="159.0" text="0" /><Label fx:id="countMVDRequests" layoutX="510.0" layoutY="213.0" text="0" /><Label fx:id="countMVDSentReq" layoutX="510.0" layoutY="238.0" text="0" />
+          </children>
+        </AnchorPane>
+      </content>
+    </Tab>
+      <Tab text="Настройки">
+          <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <children>
+                      <Button layoutX="105.959228515625" layoutY="86.0" mnemonicParsing="false" text="Button" />
+                  </children>
+              </AnchorPane>
+          </content>
+      </Tab>
+  </tabs>
+</TabPane>
+</children></VBox>
