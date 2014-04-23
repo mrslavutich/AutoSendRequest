@@ -10,11 +10,10 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -22,31 +21,71 @@ import java.util.List;
  */
 public class ReadExcelFile {
 
-    public static void read(String filePath, List<FNS> fnsList) {
-        try {
-            InputStream input = new BufferedInputStream(
-                    new FileInputStream(filePath));
-            POIFSFileSystem fs = new POIFSFileSystem(input);
-            HSSFWorkbook wb = new HSSFWorkbook(fs);
+    public static final int CELL_STATUS = 2;
+    public static final int CELL_ENTER_DATA = 1;
+    private static HSSFWorkbook workbook;
 
+    public static HashMap<String, List<FNS>> readFNSData(String filePath) {
+        HashMap<String, List<FNS>> mapFns = new HashMap<>();
+        try {
+            if (workbook == null) readFile(filePath);
+
+            List<FNS> ip = new ArrayList<>();
+            List<FNS> ul = new ArrayList<>();
             for (int i = 0; i < 3; i++) {
-                HSSFSheet sheet = wb.getSheetAt(i);
+                HSSFSheet sheet = workbook.getSheetAt(i);
                 if (sheet.getSheetName().startsWith(Register.FNS.foiv)) {
-                    fillFNSFromExcel(fnsList, sheet);
+                   fillFNSFromExcel(sheet, ip, ul);
                 }
             }
+            mapFns.put(Register.FNS.adapter, ip);
+            mapFns.put(Register.FNS.adapterUL, ul);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        return mapFns;
     }
 
-    private static void fillFNSFromExcel(List<FNS> fnsList, HSSFSheet sheet) {
+    private static void readFile(String filePath) throws IOException {
+        FileInputStream fileInputStream = new FileInputStream(filePath);
+        InputStream input = new BufferedInputStream(fileInputStream);
+        POIFSFileSystem fs = new POIFSFileSystem(input);
+        workbook = new HSSFWorkbook(fs);
+    }
+
+    public static void writeFNSStatus(List<String> listStatus, String type, String filePath) {
+        for (int i = 0; i < 3; i++) {
+            HSSFSheet sheet = workbook.getSheetAt(i);
+            if (sheet.getSheetName().startsWith(Register.FNS.foiv)) {
+                for (int r = 2; i <= sheet.getLastRowNum(); i++) {
+                    Row row = sheet.getRow(i);
+                    Cell cellData = row.getCell(CELL_ENTER_DATA);
+                    if (cellData != null && HSSFCell.CELL_TYPE_NUMERIC == cellData.getCellType()){
+                        Cell cell = row.getCell(CELL_STATUS);
+                        cell.setCellValue(listStatus.get(r));
+                    }
+                }
+
+                FileOutputStream outFile;
+                try {
+                    outFile = new FileOutputStream(filePath);
+                    workbook.write(outFile);
+                    outFile.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
+    private static void fillFNSFromExcel(HSSFSheet sheet, List<FNS> ip, List<FNS> ul) {
 
         for (Row row : sheet) {
             if (row.getRowNum() >= 2) {
 
                 FNS fns = null;
-                Cell cell = row.getCell(1);
+                Cell cell = row.getCell(CELL_ENTER_DATA);
                 if (cell != null && HSSFCell.CELL_TYPE_NUMERIC == cell.getCellType()) {
                     try {
                         fns = BuilderRequest.fillSmevFieldsDefault();
@@ -57,13 +96,14 @@ public class ReadExcelFile {
                     DecimalFormat decimalFormat = new DecimalFormat("#");
                     if (sheet.getSheetName().contains(Register.FNS.adapter)) {
                         fns.setIsInn("on");
-                        fns.setInns(decimalFormat.format(cell.getNumericCellValue()));
-                    }else if (sheet.getSheetName().contains(Register.FNS.adapterTwoInst)) {
+                        fns.setInn(decimalFormat.format(cell.getNumericCellValue()));
+                        ip.add(fns);
+                    }else if (sheet.getSheetName().contains(Register.FNS.adapterUL)) {
                         fns.setIsOgrn("on");
-                        fns.setOgrns(decimalFormat.format(cell.getNumericCellValue()));
+                        fns.setOgrn(decimalFormat.format(cell.getNumericCellValue()));
+                        ul.add(fns);
                     }
                 }
-                fnsList.add(fns);
             }
         }
     }

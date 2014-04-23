@@ -29,15 +29,15 @@
                 <smev:AppData wsu:Id="fns-AppData">
                     <Документ xmlns="http://ws.unisoft/EGRNXX/ShortFLReq" ВерсФорм="4.02" ИдДок="${idDoc}">
                     <#if isInn?? && isInn!='on'>
-                        <#if ogrns?has_content>
+                        <#if ogrn?has_content>
                                 <ЗапросИП ИдЗапрос="${idDoc}">
-                                    <ОГРНИП>${ogrns}</ОГРНИП>
+                                    <ОГРНИП>${ogrn}</ОГРНИП>
                                 </ЗапросИП>
                         </#if>
                     <#else>
-                        <#if  inns?? && inns?has_content>
+                        <#if  inn?? && inn?has_content>
                                 <ЗапросИП ИдЗапрос="${idDoc}">
-                                    <ИНН>${inns}</ИНН>
+                                    <ИНН>${inn}</ИНН>
                                 </ЗапросИП>
                         </#if>
                     </#if>

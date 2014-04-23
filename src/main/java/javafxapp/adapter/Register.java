@@ -10,7 +10,7 @@ public enum Register {
 
     public String foiv;
     public String adapter;
-    public String adapterTwoInst;
+    public String adapterUL;
 
     public String getFoiv() {
         return foiv;
@@ -33,9 +33,9 @@ public enum Register {
         this.adapter = adapter;
     }
 
-    Register(String foiv, String adapter, String adapterTwoInst) {
+    Register(String foiv, String adapter, String adapterUL) {
         this.foiv = foiv;
         this.adapter = adapter;
-        this.adapterTwoInst = adapterTwoInst;
+        this.adapterUL = adapterUL;
     }
 }

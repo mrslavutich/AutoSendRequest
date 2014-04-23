@@ -6,28 +6,28 @@ import javafxapp.adapter.SmevFields;
 import java.util.UUID;
 
 public class FNS extends SmevFields {
-    public String ogrns;
-    public String inns;
+    public String ogrn;
+    public String inn;
     public String idDoc;
     public String isOgrn;
     public String isInn;
     public String ИдЗапросФ;
 
 
-    public String getOgrns() {
-        return ogrns;
+    public String getOgrn() {
+        return ogrn;
     }
 
-    public void setOgrns(String ogrns) {
-        this.ogrns = ogrns;
+    public void setOgrn(String ogrn) {
+        this.ogrn = ogrn;
     }
 
-    public String getInns() {
-        return inns;
+    public String getInn() {
+        return inn;
     }
 
-    public void setInns(String inns) {
-        this.inns = inns;
+    public void setInn(String inn) {
+        this.inn = inn;
     }
 
     public String getIsOgrn() {

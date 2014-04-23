@@ -20,7 +20,6 @@ public class Main extends Application {
         stage.setTitle("Автоматическая отправка запросов");
         stage.show();
         mainStage = stage;
-//        DatabaseUtil.createDB();
     }
 
 

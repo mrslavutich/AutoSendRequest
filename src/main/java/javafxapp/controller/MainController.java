@@ -9,13 +9,15 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafxapp.Main;
+import javafxapp.adapter.Adapter;
 import javafxapp.adapter.Register;
-import javafxapp.adapter.Adapters;
 import javafxapp.adapter.fns.FNS;
 import javafxapp.crypto.WSSTool;
 import javafxapp.db.DatabaseUtil;
-import javafxapp.service.SendDataServiceImpl;
+import javafxapp.handleFault.FaultsUtils;
+import javafxapp.service.SendDataService;
 import javafxapp.utils.ReadExcelFile;
+import javafxapp.utils.XMLParser;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,14 +63,9 @@ public class MainController extends SmevController implements Initializable {
     public void handleSubmitSendRequests(ActionEvent event) throws Exception {
 
         if (checkboxFNS.isSelected()) {
-            int i = 0;
-            for (String strRequest : Adapters.getRequests()) {
-                strRequest = WSSTool.signSoapRequest(strRequest);
-                SendDataServiceImpl sendDataService = new SendDataServiceImpl();
-                sendDataService.sendDataToSMEV(strRequest, addressFNS.getText());
-                ++i;
-            }
-            countFNSSentReq.setText(String.valueOf(i));
+            int countSentReqIp = sendFNSReq(Adapter.getRequestsIp(), Register.FNS.adapter);
+            int countSentReqUl = sendFNSReq(Adapter.getRequestsUl(), Register.FNS.adapterUL);
+            countFNSSentReq.setText(String.valueOf(countSentReqIp + countSentReqUl));
             countFNSSentReq.getStyleClass().add("fontBold");
             countFNSRequests.getStyleClass().add("fontNormal");
             countFNSRequests.setText("0");
@@ -76,33 +73,61 @@ public class MainController extends SmevController implements Initializable {
 
     }
 
+    private int sendFNSReq(List<String> adapter, String type) throws Exception {
+        int i = 0;
+        List<String> listStatus = new ArrayList<>();
+        for (String requestXml : adapter) {
+            i++;
+            requestXml = WSSTool.signSoapRequest(requestXml);
+            String responseXml = SendDataService.sendDataToSMEV(requestXml, addressFNS.getText());
+            listStatus.add(getResponseStatus(responseXml));
+        }
+        ReadExcelFile.writeFNSStatus(listStatus, type, filePath.getText());
+        return i;
+    }
+
+    private String getResponseStatus(String responseXml) throws Exception {
+        String responseStatus = FaultsUtils.findFaultsInResponse(responseXml);
+        if (responseStatus == null){
+            responseStatus = XMLParser.getStatusElement(responseXml);
+        }
+        if (responseStatus == null){
+            responseStatus = "Ошибка";
+        }
+        return responseStatus;
+    }
+
     @FXML
     public void handleSubmitLoadData(ActionEvent event) throws Exception {
-        List<FNS> fnsList = new ArrayList<>();
-        ReadExcelFile.read(filePath.getText(), fnsList);
-        List<String> requests = BuilderRequest.buildRequestByTemplate(fnsList);
-        DatabaseUtil.insertRequests(Register.FNS.foiv, requests);
+        HashMap<String, List<FNS>> mapFns = ReadExcelFile.readFNSData(filePath.getText());
+        List<String> requestsIp = BuilderRequest.buildRequestByTemplate(mapFns.get(Register.FNS.adapter));
+        List<String> requestsUl = BuilderRequest.buildRequestByTemplate(mapFns.get(Register.FNS.adapterUL));
+        /*DatabaseUtil.insertRequests(Register.FNS.foiv, requests);*/
 
-        Adapters.setNameAdapter(Register.FNS.foiv);
-        Adapters.setRequests(requests);
-        countFNSRequests.setText(String.valueOf(requests.size()));
+        Adapter.setFoiv(Register.FNS.foiv);
+        Adapter.setRequestsIp(requestsIp);
+        Adapter.setRequestsUl(requestsUl);
+        int countFnsReq = requestsIp.size() + requestsUl.size();
+        countFNSRequests.setText(String.valueOf(countFnsReq));
         countFNSRequests.getStyleClass().add("fontBold");
     }
 
     @FXML
     public void handleFileChooser(ActionEvent event) {
         final FileChooser fileChooser = new FileChooser();
-        File dir = null;
-        try {
-            dir = new File(new File(filePath.getText()).getParent());
-        }catch (Exception e) {
-            e.printStackTrace();
+        if (filePath.getText() != null) {
+            File dir = null;
+            try {
+                dir = new File(new File(filePath.getText()).getParent());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (dir != null && dir.exists()) fileChooser.setInitialDirectory(dir);
         }
-
-        if (filePath.getText() != null && dir != null) fileChooser.setInitialDirectory(dir);
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XLS", "*.xls"));
         File file = fileChooser.showOpenDialog(Main.mainStage);
         try {
+            DatabaseUtil.savePathFile(file.getCanonicalPath());
             filePath.setText(file.getCanonicalPath());
         } catch (IOException e) {
             e.printStackTrace();
@@ -122,6 +147,8 @@ public class MainController extends SmevController implements Initializable {
             if (entry.getKey().equals(originatorCodeFNS.getId())) originatorCodeFNS.setText(entry.getValue());
             if (entry.getKey().equals(originatorNameFNS.getId())) originatorNameFNS.setText(entry.getValue());
         }
+        String pathFile = DatabaseUtil.getPathFile();
+        filePath.setText(pathFile);
 
     }
 }

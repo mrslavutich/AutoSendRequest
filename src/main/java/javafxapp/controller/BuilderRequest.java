@@ -32,7 +32,7 @@ public class BuilderRequest {
         fns.setIsInn("on");
         List<String> listInn = new ArrayList<>();
         listInn.add("500100732259");
-        fns.setInns(listInn);*/
+        fns.setInn(listInn);*/
         StringWriter out = null;
         List<String> requests = new ArrayList<>();
         for (FNS pojo: fnsList) {
@@ -44,10 +44,11 @@ public class BuilderRequest {
             out = new StringWriter();
             template.process(map, out);
             String result = new String(out.getBuffer().toString().getBytes("UTF-8"), "UTF-8");
+            out.flush();
+            out.close();
             requests.add(result);
         }
-        out.flush();
-        out.close();
+
         return requests;
     }
 

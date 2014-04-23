@@ -1,6 +1,7 @@
 package javafxapp.service;
 
 
+import javafxapp.handleFault.Fault;
 import javafxapp.utils.SoapUtils;
 
 import javax.xml.soap.*;
@@ -9,11 +10,9 @@ import java.io.ByteArrayOutputStream;
 import java.util.Iterator;
 
 
-public class SendDataServiceImpl  {
+public class SendDataService {
 
-    private static final String FAULT = "Ошибка при отправке";
-
-    public String sendDataToSMEV(String request, String smevAddress) throws Exception {
+    public static String sendDataToSMEV(String request, String smevAddress) throws Exception {
         MimeHeaders mime = new MimeHeaders();
         SOAPMessage message = MessageFactory.newInstance().createMessage(mime, new ByteArrayInputStream(request.getBytes("UTF-8")));
         SOAPMessage message2 = MessageFactory.newInstance().createMessage();
@@ -27,7 +26,7 @@ public class SendDataServiceImpl  {
         return sendToSMEV(message2, smevAddress);
     }
 
-    public String sendToSMEV(SOAPMessage message2, String smevAddress) throws Exception {
+    public static String sendToSMEV(SOAPMessage message2, String smevAddress) throws Exception {
         SOAPConnectionFactory factory = SOAPConnectionFactory.newInstance();
         SOAPConnection soapConnection = factory.createConnection();
         SOAPMessage soapResponse;
@@ -45,7 +44,7 @@ public class SendDataServiceImpl  {
             soapEnvelope = soapResponse.getSOAPPart().getEnvelope();
             return SoapUtils.soapMessageToString(soapEnvelope);
         } catch (SOAPException e) {
-            return FAULT;
+            return Fault.SEND_MESSAGE.message;
         } finally {
             soapConnection.close();
         }

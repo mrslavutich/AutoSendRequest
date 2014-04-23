@@ -1,0 +1,31 @@
+*.[oa]
+*~
+
+*.class
+
+# Package Files #
+*.war
+*.ear
+
+# Idea # 
+*.iws
+*.ipr
+*.iml
+*.ids
+.idea/
+
+# Gradle #
+build/
+out/
+.gradle/
+
+# Log #
+*.log
+
+# db #
+*.db
+
+# cucumber
+cucumber-html-report/
+
+target

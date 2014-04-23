@@ -20,10 +20,11 @@ public class DatabaseUtil {
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:autosend.db");
         } catch (Exception e) {
-            System.out.println("Ошибка в создании нового соединения " + e.getMessage());
+            System.out.println("Ошибка в создании нового соединения " + e.getLocalizedMessage());
         }
         String query = "CREATE TABLE adapter (id IDENTITY AUTO_INCREMENT, adapterName VARCHAR(32), request VARCHAR(32));" +
-                        "CREATE TABLE smevfield (id IDENTITY AUTO_INCREMENT, name VARCHAR(32), value VARCHAR(32), foiv VARCHAR(32));";
+                        "CREATE TABLE smevfield (id IDENTITY AUTO_INCREMENT, name VARCHAR(32), value VARCHAR(32), foiv VARCHAR(32));" +
+                         "CREATE TABLE settings (id IDENTITY AUTO_INCREMENT, pathFile VARCHAR(32));";
         try {
             statement = connection.createStatement();
             statement.executeUpdate(query);
@@ -47,6 +48,19 @@ public class DatabaseUtil {
         }
     }
 
+    public static void savePathFile(String path)  {
+        try {
+            clearTable("smevfield");
+
+            statement = connection.createStatement();
+            String query = "INSERT INTO settings (pathFile) VALUES ('" + path + "');";
+            statement.executeUpdate(query);
+            statement.close();
+        } catch (SQLException e) {
+            System.out.println("Ошибка при сохранение пути к файлу " + e.getMessage());
+        }
+    }
+
     public static void saveSmevFields(String foiv, HashMap<String, String> smevFileds)  {
         try {
             clearTable("smevfield");
@@ -62,6 +76,22 @@ public class DatabaseUtil {
         } catch (SQLException e) {
             System.out.println("Ошибка при сохранение служебных полей " + e.getMessage());
         }
+    }
+
+    public static String getPathFile()  {
+        String path = null;
+        try {
+            statement = connection.createStatement();
+            String query = "SELECT pathFile FROM settings";
+            ResultSet resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                path = resultSet.getString(1);
+            }
+            statement.close();
+        } catch (SQLException e) {
+            System.out.println("Ошибка при сохранение служебных полей " + e.getMessage());
+        }
+        return path;
     }
 
     public static HashMap<String, String> getSmevFields(String foiv)  {
