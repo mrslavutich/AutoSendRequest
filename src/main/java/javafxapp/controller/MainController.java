@@ -10,10 +10,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafxapp.Main;
-import javafxapp.adapter.Adapter;
 import javafxapp.adapter.Register;
 import javafxapp.adapter.fns.FNS;
-import javafxapp.crypto.WSSTool;
 import javafxapp.db.DatabaseUtil;
 import javafxapp.handleFault.FaultsUtils;
 import javafxapp.service.SendDataService;
@@ -73,8 +71,8 @@ public class MainController extends VBox implements Initializable {
         }
         if (isFileOpen) {
             if (checkboxFNS.isSelected()) {
-                int countSentReqIp = sendFNSReq(Adapter.getRequestsIp(), Register.FNS.adapter);
-                int countSentReqUl = sendFNSReq(Adapter.getRequestsUl(), Register.FNS.adapterUL);
+                int countSentReqIp = sendFNSReq(Register.FNS.adapter);
+                int countSentReqUl = sendFNSReq(Register.FNS.adapterUL);
                 countFNSSentReq.setText(String.valueOf(countSentReqIp + countSentReqUl));
                 /*countFNSSentReq.getStyleClass().add("fontBold");
                 countFNSRequests.getStyleClass().add("fontNormal");*/
@@ -86,15 +84,17 @@ public class MainController extends VBox implements Initializable {
 
     }
 
-    private int sendFNSReq(List<String> adapter, String type) throws Exception {
+    private int sendFNSReq(String type) throws Exception {
         int i = 0;
+        HashMap mapRequests = DatabaseUtil.getRequest(type);
         List<String> listStatus = new ArrayList<>();
-        for (String requestXml : adapter) {
+        for(int y=0; i<= mapRequests.size(); y++) {
             i++;
-            requestXml = WSSTool.signSoapRequest(requestXml);
-            String responseXml = SendDataService.sendDataToSMEV(requestXml, addressFNS.getText());
+            String responseXml = SendDataService.sendDataToSMEV(mapRequests.get(i).toString(), addressFNS.getText());
             System.out.println(responseXml);
-            listStatus.add(getResponseStatus(responseXml));
+            String respStatus = getResponseStatus(responseXml);
+            DatabaseUtil.saveResponse(responseXml, respStatus);
+            listStatus.add(respStatus);
         }
         ReadExcelFile.writeFNSStatus(listStatus, type, filePath.getText());
         return i;
@@ -122,11 +122,11 @@ public class MainController extends VBox implements Initializable {
         if (mapFns != null) {
             List<String> requestsIp = BuilderRequest.buildRequestByTemplate(mapFns.get(Register.FNS.adapter));
             List<String> requestsUl = BuilderRequest.buildRequestByTemplate(mapFns.get(Register.FNS.adapterUL));
-        /*DatabaseUtil.insertRequests(Register.FNS.foiv, requests);*/
+        DatabaseUtil.insertRequests(Register.FNS.foiv, requestsIp, requestsUl);
 
-            Adapter.setFoiv(Register.FNS.foiv);
+            /*Adapter.setFoiv(Register.FNS.foiv);
             Adapter.setRequestsIp(requestsIp);
-            Adapter.setRequestsUl(requestsUl);
+            Adapter.setRequestsUl(requestsUl);*/
             int countFnsReq = requestsIp.size() + requestsUl.size();
             countFNSRequests.setText(String.valueOf(countFnsReq));
         /*countFNSRequests.getStyleClass().remove("fontNormal");

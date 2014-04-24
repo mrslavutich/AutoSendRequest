@@ -2,6 +2,7 @@ package javafxapp.service;
 
 
 import javafxapp.handleFault.Fault;
+import javafxapp.sheduler.TimerRequests;
 import javafxapp.utils.SoapUtils;
 
 import javax.xml.soap.*;
@@ -25,6 +26,23 @@ public class SendDataService {
 
         return sendToSMEV(message2, smevAddress);
     }
+
+     public String sendStatusByTimer(TimerRequests requests) throws Exception {
+         String server = requests.getSmevAddress();
+         MimeHeaders mime = new MimeHeaders();
+         SOAPMessage message = MessageFactory.newInstance().createMessage(mime, new ByteArrayInputStream(requests.getRequestXml().getBytes("UTF-8")));
+         System.out.println("request = " + requests.getRequestXml().getBytes("UTF-8"));
+         SOAPMessage message2 = MessageFactory.newInstance().createMessage();
+         message2.getSOAPPart().setContent(message.getSOAPPart().getContent());
+         ByteArrayOutputStream out = new ByteArrayOutputStream();
+         message2.writeTo(out);
+         MimeHeaders headers = message2.getMimeHeaders();
+         String action = "http://smev.gosuslugi.ru/createRequest";
+         if (!action.equals(""))
+             headers.addHeader("SOAPAction", action);
+
+         return sendToSMEV(message2, server);
+     }
 
     public static String sendToSMEV(SOAPMessage message2, String smevAddress) throws Exception {
         SOAPConnectionFactory factory = SOAPConnectionFactory.newInstance();

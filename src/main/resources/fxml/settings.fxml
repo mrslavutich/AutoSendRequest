@@ -5,5 +5,14 @@
 <?import javafx.scene.layout.*?>
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-<children><Label layoutX="26.0" layoutY="68.0" prefHeight="28.0" prefWidth="206.0" text="Поочередная отправка запросов через заданный период времени: " textAlignment="RIGHT" wrapText="true" /><Label layoutX="281.0" layoutY="75.0" text="дни" /><Label layoutX="349.0" layoutY="75.0" text="часы" /><Label layoutX="507.0" layoutY="75.0" text="секунды" /><TextField fx:id="idMinutes" layoutX="384.0" layoutY="71.0" prefHeight="22.0" prefWidth="31.0" /><Label layoutX="421.0" layoutY="75.0" text="минуты" /><TextField fx:id="idSeconds" layoutX="470.0" layoutY="71.0" prefHeight="22.0" prefWidth="31.0" /><TextField fx:id="idHours" layoutX="312.0" layoutY="71.0" prefHeight="22.0" prefWidth="31.0" /><TextField fx:id="idDays" layoutX="244.0" layoutY="71.0" prefHeight="22.0" prefWidth="31.0" />
+<children>
+    <Label layoutX="171.0" layoutY="82.0" text="дни" />
+    <Label layoutX="239.0" layoutY="82.0" text="часы" />
+    <Label layoutX="397.0" layoutY="82.0" text="секунды" />
+    <TextField fx:id="idMinutes" layoutX="274.0" layoutY="78.0" prefHeight="22.0" prefWidth="31.0" />
+    <Label layoutX="311.0" layoutY="82.0" text="минуты" />
+    <TextField fx:id="idSeconds" layoutX="360.0" layoutY="78.0" prefHeight="22.0" prefWidth="31.0" />
+    <TextField fx:id="idHours" layoutX="202.0" layoutY="78.0" prefHeight="22.0" prefWidth="31.0" />
+    <TextField fx:id="idDays" layoutX="134.0" layoutY="78.0" prefHeight="22.0" prefWidth="31.0" />
+    <CheckBox fx:id="autoSend" layoutX="80.0" layoutY="55.0" mnemonicParsing="false" text="Включить поочередную отправку запросов через заданный период времени:" />
 </children></Pane>

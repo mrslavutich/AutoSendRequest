@@ -3,6 +3,7 @@ package javafxapp.controller;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import javafxapp.adapter.fns.FNS;
+import javafxapp.crypto.WSSTool;
 import javafxapp.utils.Mapper;
 
 import java.io.StringWriter;
@@ -46,6 +47,8 @@ public class BuilderRequest {
             String result = new String(out.getBuffer().toString().getBytes("UTF-8"), "UTF-8");
             out.flush();
             out.close();
+            result = WSSTool.signSoapRequest(result);
+
             requests.add(result);
         }
 

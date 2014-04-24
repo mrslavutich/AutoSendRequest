@@ -1,6 +1,6 @@
 package javafxapp.db;
 
-import org.apache.commons.codec.binary.Base64;
+import javafxapp.adapter.Register;
 
 import java.sql.*;
 import java.util.HashMap;
@@ -14,6 +14,8 @@ public class DatabaseUtil {
 
     private static Connection connection;
     private static Statement statement;
+    private static final String status_ready = "На отправку";
+    private static String status_sent = "Отправлено";
 
     public static void createDB() {
         try {
@@ -22,7 +24,7 @@ public class DatabaseUtil {
         } catch (Exception e) {
             System.out.println("Ошибка в создании нового соединения " + e.getLocalizedMessage());
         }
-        String query = "CREATE TABLE adapter (id IDENTITY AUTO_INCREMENT, adapterName VARCHAR(32), request VARCHAR(32));" +
+        String query = "CREATE TABLE adapter (id IDENTITY AUTO_INCREMENT, numReq INTEGER , foiv VARCHAR(32), adapterName VARCHAR(32), requestXml VARCHAR(32), responseXml VARCHAR(32), status VARCHAR(32), responseStatus VARCHAR(32) );" +
                         "CREATE TABLE smevfield (id IDENTITY AUTO_INCREMENT, name VARCHAR(32), value VARCHAR(32), foiv VARCHAR(32));" +
                          "CREATE TABLE settings (id IDENTITY AUTO_INCREMENT, pathFile VARCHAR(32));";
         try {
@@ -32,14 +34,17 @@ public class DatabaseUtil {
         } catch (SQLException ignored) {}
     }
 
-    public static void insertRequests(String adapterName, List<String> requests)  {
+    public static void insertRequests(String foiv, List<String> requestsIp, List<String> requestsUl)  {
         try {
             clearTable("ADAPTER");
 
             statement = connection.createStatement();
             String query = "";
-            for (String request: requests){
-                query += "INSERT INTO adapter (adapterName, request) VALUES ('"+ adapterName + "', '" + new String(Base64.encodeBase64(request.getBytes())) + "');";
+            for (int i=0; i<= requestsIp.size(); i++){
+                query += "INSERT INTO adapter (numReq, foiv, adapterName, request, status) VALUES ("+ i + ", '"+ foiv + "', '" + Register.FNS.adapter + "','" + requestsIp.get(i) + "', '" + status_ready + "');";
+            }
+            for (int i=0; i<= requestsUl.size(); i++){
+                query += "INSERT INTO adapter (numReq, foiv, adapterName, request, status) VALUES ("+ i + ", '"+ foiv + "', '" + Register.FNS.adapterUL + "','" + requestsUl.get(i) + "', '" + status_ready + "');";
             }
             statement.executeUpdate(query);
             statement.close();
@@ -122,24 +127,6 @@ public class DatabaseUtil {
         }
     }
 
-    public static void select(String adapterName)  {
-        try {
-            statement = connection.createStatement();
-            String query = "SELECT id, adapterName, request  FROM adapter";
-            ResultSet resultSet = statement.executeQuery(query);
-
-            /*while (resultSet.next()) {
-                System.out.println(resultSet.getInt(1) + " "
-                        + resultSet.getString(2));
-            }*/
-            statement.close();
-
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     public static void close()  {
         try {
             statement = connection.createStatement();
@@ -151,4 +138,31 @@ public class DatabaseUtil {
 
     }
 
+    public static HashMap<Integer, String> getRequest(String adapterName) {
+        HashMap<Integer, String> hashMap = null;
+        try {
+            statement = connection.createStatement();
+            String query = "SELECT numReq, request FROM adapter WHERE adapterName = '"+ adapterName +"'";
+            ResultSet resultSet = statement.executeQuery(query);
+            hashMap = new HashMap<>();
+            while (resultSet.next()) {
+                hashMap.put(resultSet.getInt(1), resultSet.getString(2));
+            }
+            statement.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return hashMap;
+    }
+
+    public static void saveResponse(String responseXml, String respStatus) {
+        try {
+            statement = connection.createStatement();
+            String query = "UPDATE adapter (response, responseStatus, status) VALUES ('"+ responseXml + "', '" + respStatus + "', '" + status_sent + "');";
+            statement.executeUpdate(query);
+            statement.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }
