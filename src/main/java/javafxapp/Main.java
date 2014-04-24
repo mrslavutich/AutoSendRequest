@@ -13,7 +13,7 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception{
 
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/MenuBar.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/main.fxml"));
         Scene scene = new Scene(root);
         scene.getStylesheets().add("css/style.css");
         stage.setScene(scene);
@@ -22,8 +22,8 @@ public class Main extends Application {
         mainStage = stage;
     }
 
-
     public static void main(String[] args) {
         launch(args);
     }
+
 }

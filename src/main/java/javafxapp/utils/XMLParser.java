@@ -29,7 +29,7 @@ public class XMLParser {
 
     public static String getFaultElement(String xml) throws Exception {
         Document doc = parseDocFromByte(xml.getBytes());
-        Element elem = getDocElementByNS(doc, FAULTSTRING, soap_envelope);
+        Element elem = getDocElement(doc, FAULTSTRING);
         if (elem != null) {
             return elem.getTextContent();
         }
@@ -75,4 +75,12 @@ public class XMLParser {
              el = (Element) nodeList.item(0);
          return el;
      }
+
+    private static Element getDocElement(Document doc, String elName) {
+        Element el = null;
+        NodeList nodeList = doc.getElementsByTagName(elName);
+        if (nodeList != null)
+            el = (Element) nodeList.item(0);
+        return el;
+    }
 }

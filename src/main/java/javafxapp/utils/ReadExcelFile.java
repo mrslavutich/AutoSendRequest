@@ -14,6 +14,7 @@ import java.io.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -24,30 +25,27 @@ public class ReadExcelFile {
     public static final int CELL_STATUS = 2;
     public static final int CELL_ENTER_DATA = 1;
     private static HSSFWorkbook workbook;
+    private static FileInputStream fileInputStream;
 
-    public static HashMap<String, List<FNS>> readFNSData(String filePath) {
+    public static HashMap<String, List<FNS>> readFNSData(String filePath) throws IOException {
         HashMap<String, List<FNS>> mapFns = new HashMap<>();
-        try {
-            if (workbook == null) readFile(filePath);
+        readFile(filePath);
 
-            List<FNS> ip = new ArrayList<>();
-            List<FNS> ul = new ArrayList<>();
-            for (int i = 0; i < 3; i++) {
-                HSSFSheet sheet = workbook.getSheetAt(i);
-                if (sheet.getSheetName().startsWith(Register.FNS.foiv)) {
-                   fillFNSFromExcel(sheet, ip, ul);
-                }
+        List<FNS> ip = new ArrayList<>();
+        List<FNS> ul = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            HSSFSheet sheet = workbook.getSheetAt(i);
+            if (sheet.getSheetName().startsWith(Register.FNS.foiv)) {
+               fillFNSFromExcel(sheet, ip, ul);
             }
-            mapFns.put(Register.FNS.adapter, ip);
-            mapFns.put(Register.FNS.adapterUL, ul);
-        } catch (IOException ex) {
-            ex.printStackTrace();
         }
+        mapFns.put(Register.FNS.adapter, ip);
+        mapFns.put(Register.FNS.adapterUL, ul);
         return mapFns;
     }
 
     private static void readFile(String filePath) throws IOException {
-        FileInputStream fileInputStream = new FileInputStream(filePath);
+        fileInputStream = new FileInputStream(filePath);
         InputStream input = new BufferedInputStream(fileInputStream);
         POIFSFileSystem fs = new POIFSFileSystem(input);
         workbook = new HSSFWorkbook(fs);
@@ -56,18 +54,21 @@ public class ReadExcelFile {
     public static void writeFNSStatus(List<String> listStatus, String type, String filePath) {
         for (int i = 0; i < 3; i++) {
             HSSFSheet sheet = workbook.getSheetAt(i);
-            if (sheet.getSheetName().startsWith(Register.FNS.foiv)) {
+            if (sheet.getSheetName().startsWith(Register.FNS.foiv) && sheet.getSheetName().contains(type)) {
+                Iterator iteratorStatus = listStatus.iterator();
                 for (int r = 2; i <= sheet.getLastRowNum(); i++) {
                     Row row = sheet.getRow(i);
-                    Cell cellData = row.getCell(CELL_ENTER_DATA);
+                    Cell cellData = null;
+                    if (row != null) cellData = row.getCell(CELL_ENTER_DATA);
                     if (cellData != null && HSSFCell.CELL_TYPE_NUMERIC == cellData.getCellType()){
                         Cell cell = row.getCell(CELL_STATUS);
-                        cell.setCellValue(listStatus.get(r));
+                        cell.setCellValue(iteratorStatus.hasNext() ? iteratorStatus.next().toString() : "");
                     }
                 }
 
                 FileOutputStream outFile;
                 try {
+                    fileInputStream.close();
                     outFile = new FileOutputStream(filePath);
                     workbook.write(outFile);
                     outFile.close();

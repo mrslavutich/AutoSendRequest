@@ -1,34 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="425.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafxapp.controller.MainController">
-<children><TabPane prefHeight="431.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafxapp.controller.MainController?>
+<MainController maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="425.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafxapp.controller.MainController" >
+    <fx:define>
+        <fx:include source="smevfields.fxml" fx:id="smevfields" />
+   </fx:define>
+    <children>
+    <TabPane prefHeight="431.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
   <tabs>
-    <Tab text="Служебные поля">
-        <content>
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="212.0" prefWidth="600.0">
-                <children><Label layoutX="77.0" layoutY="41.0" prefHeight="17.0" prefWidth="332.0" text="Данные о системе-инициаторе взаимодействия (Потребителе):" textAlignment="CENTER" wrapText="true" />
-                    <TextField fx:id="senderCodeFNS" layoutX="138.0" layoutY="65.0" prefHeight="22.0" prefWidth="92.0" />
-                    <Label layoutX="77.0" layoutY="105.0" prefHeight="17.0" prefWidth="319.0" text="Данные о системе-получателе сообщения (Поставщике):" textAlignment="CENTER" wrapText="true" />
-                    <Label layoutX="77.0" layoutY="175.0" prefHeight="30.0" prefWidth="403.0" text="Данные о системе, инициировавшей цепочку из нескольких запросов-ответов, объединенных единым процессом в рамках взаимодействия:" wrapText="true" />
-                    <Label layoutX="100.0" layoutY="69.0" text="Код" />
-                    <Label layoutX="269.0" layoutY="69.0" text="Наименование" />
-                    <TextField fx:id="senderNameFNS" layoutX="365.0" layoutY="65.0" prefHeight="22.0" prefWidth="92.0" />
-                    <TextField fx:id="recipientNameFNS" layoutX="365.0" layoutY="131.0" prefHeight="22.0" prefWidth="92.0" />
-                    <Label layoutX="269.0" layoutY="135.0" text="Наименование" />
-                    <Label layoutX="100.0" layoutY="135.0" text="Код" />
-                    <TextField fx:id="recipientCodeFNS" layoutX="138.0" layoutY="131.0" prefHeight="22.0" prefWidth="92.0" />
-                    <TextField fx:id="originatorCodeFNS" layoutX="138.0" layoutY="214.0" prefHeight="22.0" prefWidth="92.0" />
-                    <Label layoutX="100.0" layoutY="218.0" text="Код" />
-                    <Label layoutX="269.0" layoutY="218.0" text="Наименование" />
-                    <TextField fx:id="originatorNameFNS" layoutX="365.0" layoutY="214.0" prefHeight="22.0" prefWidth="92.0" />
-                    <Button layoutX="254.0" layoutY="283.0" mnemonicParsing="false" text="Сохранить" onAction="#handleSaveSmevFileds"/>
-                </children></AnchorPane>
-        </content>
-    </Tab>
     <Tab text="Отправка запросов">
       <content>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
@@ -46,7 +28,7 @@
               <Label layoutX="406.0" layoutY="55.0" text="готово к отправке: " />
               <Label layoutX="408.0" layoutY="211.0" text="готово к отправке:" />
               <Label layoutX="408.0" layoutY="135.0" text="готово к отправке:" />
-              <Label layoutX="406.0" layoutY="76.0" text="отправлено: " />
+              <Label layoutX="406.0" layoutY="76.0" text="отправлено:" />
               <Label layoutX="408.0" layoutY="237.0" text="отправлено:" />
               <Label layoutX="408.0" layoutY="159.0" text="отправлено:" />
               <Button layoutX="311.0" layoutY="303.0" mnemonicParsing="false" onAction="#handleFileChooser" text="Выберите файл" />
@@ -56,6 +38,25 @@
         </AnchorPane>
       </content>
     </Tab>
+      <Tab text="Служебные поля" content="$smevfields"/>
+             <!-- <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="212.0" prefWidth="600.0">
+                  <children><Label layoutX="77.0" layoutY="41.0" prefHeight="17.0" prefWidth="332.0" text="Данные о системе-инициаторе взаимодействия (Потребителе):" textAlignment="CENTER" wrapText="true" />
+                      <TextField fx:id="senderCodeFNS" layoutX="138.0" layoutY="65.0" prefHeight="22.0" prefWidth="92.0" />
+                      <Label layoutX="77.0" layoutY="105.0" prefHeight="17.0" prefWidth="319.0" text="Данные о системе-получателе сообщения (Поставщике):" textAlignment="CENTER" wrapText="true" />
+                      <Label layoutX="77.0" layoutY="175.0" prefHeight="30.0" prefWidth="403.0" text="Данные о системе, инициировавшей цепочку из нескольких запросов-ответов, объединенных единым процессом в рамках взаимодействия:" wrapText="true" />
+                      <Label layoutX="100.0" layoutY="69.0" text="Код" />
+                      <Label layoutX="269.0" layoutY="69.0" text="Наименование" />
+                      <TextField fx:id="senderNameFNS" layoutX="365.0" layoutY="65.0" prefHeight="22.0" prefWidth="92.0" />
+                      <TextField fx:id="recipientNameFNS" layoutX="365.0" layoutY="131.0" prefHeight="22.0" prefWidth="92.0" />
+                      <Label layoutX="269.0" layoutY="135.0" text="Наименование" />
+                      <Label layoutX="100.0" layoutY="135.0" text="Код" />
+                      <TextField fx:id="recipientCodeFNS" layoutX="138.0" layoutY="131.0" prefHeight="22.0" prefWidth="92.0" />
+                      <TextField fx:id="originatorCodeFNS" layoutX="138.0" layoutY="214.0" prefHeight="22.0" prefWidth="92.0" />
+                      <Label layoutX="100.0" layoutY="218.0" text="Код" />
+                      <Label layoutX="269.0" layoutY="218.0" text="Наименование" />
+                      <TextField fx:id="originatorNameFNS" layoutX="365.0" layoutY="214.0" prefHeight="22.0" prefWidth="92.0" />
+                      <Button layoutX="254.0" layoutY="283.0" mnemonicParsing="false" text="Сохранить" onAction="#handleSaveSmevFileds"/>
+                  </children></AnchorPane>-->
       <Tab text="Настройки">
           <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
@@ -67,4 +68,5 @@
       </Tab>
   </tabs>
 </TabPane>
-</children></VBox>
+</children>
+</MainController>

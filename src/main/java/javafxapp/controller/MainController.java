@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafxapp.Main;
 import javafxapp.adapter.Adapter;
@@ -20,11 +21,12 @@ import javafxapp.utils.ReadExcelFile;
 import javafxapp.utils.XMLParser;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
-public class MainController extends SmevController implements Initializable {
+public class MainController extends VBox implements Initializable {
 
     @FXML
     public TextField addressPFR;
@@ -62,13 +64,24 @@ public class MainController extends SmevController implements Initializable {
     @FXML
     public void handleSubmitSendRequests(ActionEvent event) throws Exception {
 
-        if (checkboxFNS.isSelected()) {
-            int countSentReqIp = sendFNSReq(Adapter.getRequestsIp(), Register.FNS.adapter);
-            int countSentReqUl = sendFNSReq(Adapter.getRequestsUl(), Register.FNS.adapterUL);
-            countFNSSentReq.setText(String.valueOf(countSentReqIp + countSentReqUl));
-            countFNSSentReq.getStyleClass().add("fontBold");
-            countFNSRequests.getStyleClass().add("fontNormal");
-            countFNSRequests.setText("0");
+        boolean isFileOpen;
+        try {
+            new FileOutputStream(filePath.getText());
+            isFileOpen = true;
+        } catch (IOException e) {
+            isFileOpen = false;
+        }
+        if (isFileOpen) {
+            if (checkboxFNS.isSelected()) {
+                int countSentReqIp = sendFNSReq(Adapter.getRequestsIp(), Register.FNS.adapter);
+                int countSentReqUl = sendFNSReq(Adapter.getRequestsUl(), Register.FNS.adapterUL);
+                countFNSSentReq.setText(String.valueOf(countSentReqIp + countSentReqUl));
+                /*countFNSSentReq.getStyleClass().add("fontBold");
+                countFNSRequests.getStyleClass().add("fontNormal");*/
+                countFNSRequests.setText("0");
+            }
+        }else{
+            ErrorController.showDialog("Закройте файл: " + filePath.getText());
         }
 
     }
@@ -80,6 +93,7 @@ public class MainController extends SmevController implements Initializable {
             i++;
             requestXml = WSSTool.signSoapRequest(requestXml);
             String responseXml = SendDataService.sendDataToSMEV(requestXml, addressFNS.getText());
+            System.out.println(responseXml);
             listStatus.add(getResponseStatus(responseXml));
         }
         ReadExcelFile.writeFNSStatus(listStatus, type, filePath.getText());
@@ -99,17 +113,28 @@ public class MainController extends SmevController implements Initializable {
 
     @FXML
     public void handleSubmitLoadData(ActionEvent event) throws Exception {
-        HashMap<String, List<FNS>> mapFns = ReadExcelFile.readFNSData(filePath.getText());
-        List<String> requestsIp = BuilderRequest.buildRequestByTemplate(mapFns.get(Register.FNS.adapter));
-        List<String> requestsUl = BuilderRequest.buildRequestByTemplate(mapFns.get(Register.FNS.adapterUL));
+        HashMap<String, List<FNS>> mapFns = null;
+        try {
+            mapFns = ReadExcelFile.readFNSData(filePath.getText());
+        }catch (IOException e){
+            ErrorController.showDialog("Невозможно прочитать файл");
+        }
+        if (mapFns != null) {
+            List<String> requestsIp = BuilderRequest.buildRequestByTemplate(mapFns.get(Register.FNS.adapter));
+            List<String> requestsUl = BuilderRequest.buildRequestByTemplate(mapFns.get(Register.FNS.adapterUL));
         /*DatabaseUtil.insertRequests(Register.FNS.foiv, requests);*/
 
-        Adapter.setFoiv(Register.FNS.foiv);
-        Adapter.setRequestsIp(requestsIp);
-        Adapter.setRequestsUl(requestsUl);
-        int countFnsReq = requestsIp.size() + requestsUl.size();
-        countFNSRequests.setText(String.valueOf(countFnsReq));
+            Adapter.setFoiv(Register.FNS.foiv);
+            Adapter.setRequestsIp(requestsIp);
+            Adapter.setRequestsUl(requestsUl);
+            int countFnsReq = requestsIp.size() + requestsUl.size();
+            countFNSRequests.setText(String.valueOf(countFnsReq));
+        /*countFNSRequests.getStyleClass().remove("fontNormal");
         countFNSRequests.getStyleClass().add("fontBold");
+        countFNSSentReq.getStyleClass().remove("fontBold");
+        countFNSSentReq.getStyleClass().add("fontNormal");*/
+            countFNSSentReq.setText("0");
+        }
     }
 
     @FXML
@@ -140,12 +165,12 @@ public class MainController extends SmevController implements Initializable {
         DatabaseUtil.createDB();
         HashMap<String, String> smevFileds = DatabaseUtil.getSmevFields(Register.FNS.foiv);
         for(Map.Entry<String, String> entry : smevFileds.entrySet()) {
-            if (entry.getKey().equals(senderCodeFNS.getId())) senderCodeFNS.setText(entry.getValue());
-            if (entry.getKey().equals(senderNameFNS.getId())) senderNameFNS.setText(entry.getValue());
-            if (entry.getKey().equals(recipientCodeFNS.getId())) recipientCodeFNS.setText(entry.getValue());
-            if (entry.getKey().equals(recipientNameFNS.getId())) recipientNameFNS.setText(entry.getValue());
-            if (entry.getKey().equals(originatorCodeFNS.getId())) originatorCodeFNS.setText(entry.getValue());
-            if (entry.getKey().equals(originatorNameFNS.getId())) originatorNameFNS.setText(entry.getValue());
+            if (entry.getKey().equals(SmevController.senderCodeFNS.getId())) SmevController.senderCodeFNS.setText(entry.getValue());
+            if (entry.getKey().equals(SmevController.senderNameFNS.getId())) SmevController.senderNameFNS.setText(entry.getValue());
+            if (entry.getKey().equals(SmevController.recipientCodeFNS.getId())) SmevController.recipientCodeFNS.setText(entry.getValue());
+            if (entry.getKey().equals(SmevController.recipientNameFNS.getId())) SmevController.recipientNameFNS.setText(entry.getValue());
+            if (entry.getKey().equals(SmevController.originatorCodeFNS.getId())) SmevController.originatorCodeFNS.setText(entry.getValue());
+            if (entry.getKey().equals(SmevController.originatorNameFNS.getId())) SmevController.originatorNameFNS.setText(entry.getValue());
         }
         String pathFile = DatabaseUtil.getPathFile();
         filePath.setText(pathFile);
