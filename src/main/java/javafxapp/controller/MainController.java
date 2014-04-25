@@ -3,6 +3,7 @@ package javafxapp.controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -11,6 +12,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafxapp.Main;
 import javafxapp.adapter.Register;
+import javafxapp.adapter.domain.Adapter;
+import javafxapp.adapter.domain.Settings;
 import javafxapp.adapter.fns.FNS;
 import javafxapp.db.DatabaseUtil;
 import javafxapp.handleFault.FaultsUtils;
@@ -58,6 +61,8 @@ public class MainController extends VBox implements Initializable {
     public CheckBox checkboxMVD;
     @FXML
     public CheckBox checkboxFNS;
+    @FXML
+    private Node idLoadData;
 
     @FXML
     public void handleSubmitSendRequests(ActionEvent event) throws Exception {
@@ -71,8 +76,8 @@ public class MainController extends VBox implements Initializable {
         }
         if (isFileOpen) {
             if (checkboxFNS.isSelected()) {
-                int countSentReqIp = sendFNSReq(Register.FNS.adapter);
-                int countSentReqUl = sendFNSReq(Register.FNS.adapterUL);
+                int countSentReqIp = sendFNSReq("07");
+                int countSentReqUl = sendFNSReq("07_2");
                 countFNSSentReq.setText(String.valueOf(countSentReqIp + countSentReqUl));
                 /*countFNSSentReq.getStyleClass().add("fontBold");
                 countFNSRequests.getStyleClass().add("fontNormal");*/
@@ -84,19 +89,18 @@ public class MainController extends VBox implements Initializable {
 
     }
 
-    private int sendFNSReq(String type) throws Exception {
+    private int sendFNSReq(String id210fz) throws Exception {
         int i = 0;
-        HashMap mapRequests = DatabaseUtil.getRequest(type);
+        List<Adapter> adapters = DatabaseUtil.getRequest(id210fz);
         List<String> listStatus = new ArrayList<>();
-        for(int y=0; i<= mapRequests.size(); y++) {
+        for(Adapter adapter: adapters) {
             i++;
-            String responseXml = SendDataService.sendDataToSMEV(mapRequests.get(i).toString(), addressFNS.getText());
-            System.out.println(responseXml);
+            String responseXml = SendDataService.sendDataToSMEV(adapter.getRequestXml(), addressFNS.getText());
             String respStatus = getResponseStatus(responseXml);
-            DatabaseUtil.saveResponse(responseXml, respStatus);
+            DatabaseUtil.saveResponse(responseXml, respStatus, adapter.getNumReq(), id210fz);
             listStatus.add(respStatus);
         }
-        ReadExcelFile.writeFNSStatus(listStatus, type, filePath.getText());
+        ReadExcelFile.writeFNSStatus(listStatus, id210fz, filePath.getText());
         return i;
     }
 
@@ -113,34 +117,33 @@ public class MainController extends VBox implements Initializable {
 
     @FXML
     public void handleSubmitLoadData(ActionEvent event) throws Exception {
-        HashMap<String, List<FNS>> mapFns = null;
-        try {
-            mapFns = ReadExcelFile.readFNSData(filePath.getText());
-        }catch (IOException e){
-            ErrorController.showDialog("Невозможно прочитать файл");
-        }
-        if (mapFns != null) {
-            List<String> requestsIp = BuilderRequest.buildRequestByTemplate(mapFns.get(Register.FNS.adapter));
-            List<String> requestsUl = BuilderRequest.buildRequestByTemplate(mapFns.get(Register.FNS.adapterUL));
-        DatabaseUtil.insertRequests(Register.FNS.foiv, requestsIp, requestsUl);
+        if (filePath !=null && !filePath.getText().equals("")) {
+            HashMap<String, List<FNS>> mapFns = null;
+            try {
+                mapFns = ReadExcelFile.readFNSData(filePath.getText());
+            } catch (IOException e) {
+                ErrorController.showDialog("Невозможно прочитать файл");
+            }
+            if (mapFns != null) {
+                List<String> requestsIp = BuilderRequest.buildRequestByTemplate(mapFns.get(Register.FNS.adapter));
+                List<String> requestsUl = BuilderRequest.buildRequestByTemplate(mapFns.get(Register.FNS.adapterUL));
+                DatabaseUtil.insertRequests(Register.FNS.foiv, requestsIp, requestsUl);
 
-            /*Adapter.setFoiv(Register.FNS.foiv);
-            Adapter.setRequestsIp(requestsIp);
-            Adapter.setRequestsUl(requestsUl);*/
-            int countFnsReq = requestsIp.size() + requestsUl.size();
-            countFNSRequests.setText(String.valueOf(countFnsReq));
+                int countFnsReq = requestsIp.size() + requestsUl.size();
+                countFNSRequests.setText(String.valueOf(countFnsReq));
         /*countFNSRequests.getStyleClass().remove("fontNormal");
         countFNSRequests.getStyleClass().add("fontBold");
         countFNSSentReq.getStyleClass().remove("fontBold");
         countFNSSentReq.getStyleClass().add("fontNormal");*/
-            countFNSSentReq.setText("0");
+                countFNSSentReq.setText("0");
+            }
         }
     }
 
     @FXML
     public void handleFileChooser(ActionEvent event) {
         final FileChooser fileChooser = new FileChooser();
-        if (filePath.getText() != null) {
+        if (filePath != null && !filePath.getText().equals("")) {
             File dir = null;
             try {
                 dir = new File(new File(filePath.getText()).getParent());
@@ -172,8 +175,15 @@ public class MainController extends VBox implements Initializable {
             if (entry.getKey().equals(SmevController.originatorCodeFNS.getId())) SmevController.originatorCodeFNS.setText(entry.getValue());
             if (entry.getKey().equals(SmevController.originatorNameFNS.getId())) SmevController.originatorNameFNS.setText(entry.getValue());
         }
-        String pathFile = DatabaseUtil.getPathFile();
-        filePath.setText(pathFile);
+        Settings settings = DatabaseUtil.getSettings();
+
+        if (settings != null && settings.getPathFile() != null && !settings.getPathFile().equals("")) {
+            filePath.setText(settings.getPathFile());
+        }
+        /*else idLoadData.setDisable(true);*/
+
+
+
 
     }
 }

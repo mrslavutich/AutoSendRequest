@@ -1,5 +1,6 @@
 package javafxapp.crypto;
 
+import javafxapp.controller.SettingsController;
 import org.w3c.dom.Document;
 import ru.atc.smev.crypto.XmlSignatureTool;
 import ru.gosuslugi.smev.signaturetool.xsd.Part4SignType;
@@ -31,7 +32,7 @@ public class WSSTool {
         String signedRequest = "";
         final Document doc = TransformDoc.readXml(request);
         try {
-            final Document signDoc = tool.signMessage(doc, parts, SMEV_ACTOR, CERT_ALIAS, PKEY_ALIAS, PKEY_PASSWORD);
+            final Document signDoc = tool.signMessage(doc, parts, SMEV_ACTOR, SettingsController.keyAlias.getText(), SettingsController.keyAlias.getText(), SettingsController.password.getText());
 
             signedRequest = TransformDoc.writeXml(signDoc);
 

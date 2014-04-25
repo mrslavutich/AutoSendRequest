@@ -1,14 +1,5 @@
 package javafxapp.sheduler;
 
-import libraryapp.LoadAdapterDefinition;
-import libraryapp.utils.DateUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import web.Service.RequestService;
-import web.Service.SendDataService;
-import web.Service.SettingsService;
-import web.domain.RequestXML;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -75,7 +66,7 @@ public class RequestTimer extends Thread implements IRequestTimer {
                 String key = iterator.next();
                 try {
                     if (requests.get(key).getRequestXml() != null) {
-                        String result = sendDataService.sendStatusByTimer(requests.get(key));
+                       /* String result = sendDataService.sendStatusByTimer(requests.get(key));
                         String status = loadAdapterDefinition.requestStatusByXml(result);
                         if (status.equals("Получен ответ")) {
                             RequestXML requestXML = requestService.findXML(key);
@@ -85,7 +76,7 @@ public class RequestTimer extends Thread implements IRequestTimer {
                             requestXML.setData(DateUtil.YYYY_MM_DD_HH_MM_SS_S.format(new java.util.Date()));
                             requestService.save(requestXML);
                             TimerCache.getInstance().deleteRequest(key);
-                        }
+                        }*/
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

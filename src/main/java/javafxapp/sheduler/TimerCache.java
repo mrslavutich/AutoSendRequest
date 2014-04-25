@@ -1,6 +1,6 @@
 package javafxapp.sheduler;
 
-import web.domain.RequestXML;
+import javafxapp.adapter.domain.Adapter;
 
 import java.util.HashMap;
 
@@ -19,12 +19,12 @@ public class TimerCache {
         return timerCache;
     }
 
-    public synchronized void addRequest(RequestXML requestXML){
+    public synchronized void addRequest(Adapter adapter){
         TimerRequests timerRequests = new TimerRequests();
-        timerRequests.setRequestXml(requestXML.getStatusRequest());
-        timerRequests.setSmevAddress(requestXML.getAdapter().getSmevaddress());
-        timerRequests.setAdapterId(requestXML.getAdapter().getId210fz());
-        requestsToSend.put(String.valueOf(requestXML.getId()), timerRequests);
+        timerRequests.setRequestXml(adapter.getRequestXml());
+        timerRequests.setSmevAddress(adapter.getAdapterDetails().getSmevAddress());
+        timerRequests.setAdapterId(adapter.getAdapterDetails().getId210fz());
+        requestsToSend.put(String.valueOf(adapter.getId()), timerRequests);
 
     }
 
