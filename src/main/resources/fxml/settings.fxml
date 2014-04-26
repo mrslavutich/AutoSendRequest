@@ -5,27 +5,29 @@
 <SettingsController maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafxapp.controller.SettingsController" >
     <children>
         <Label layoutX="171.0" layoutY="62.0" text="дни" />
-        <Label layoutX="239.0" layoutY="62.0" text="часы" />
-        <Label layoutX="397.0" layoutY="62.0" text="секунды" />
-        <TextField fx:id="idMinutes" layoutX="274.0" layoutY="58.0" prefHeight="22.0" prefWidth="31.0" />
-        <Label layoutX="311.0" layoutY="62.0" text="минуты" />
-        <TextField fx:id="idSeconds" layoutX="360.0" layoutY="58.0" prefHeight="22.0" prefWidth="31.0" />
-        <TextField fx:id="idHours" layoutX="202.0" layoutY="58.0" prefHeight="22.0" prefWidth="31.0" />
-        <TextField fx:id="idDays" layoutX="134.0" layoutY="58.0" prefHeight="22.0" prefWidth="31.0" />
-        <CheckBox fx:id="autoSend" layoutX="83.0" layoutY="35.0" mnemonicParsing="false" text="Включить поочередную отправку запросов через заданный период времени:" />
-        <Label layoutX="93.0" layoutY="232.0" text="Данные по сертификату для подписи:" />
-        <TextField fx:id="keyAlias" layoutX="226.0" layoutY="258.0" prefHeight="22.0" prefWidth="278.0" />
-        <Label layoutX="188.0" layoutY="262.0" text="Ключ" />
-        <Label layoutX="177.0" layoutY="296.0" text="Пароль" />
-        <TextField fx:id="password" layoutX="226.0" layoutY="292.0" prefHeight="22.0" prefWidth="278.0" />
-        <CheckBox layoutX="82.0" layoutY="97.0" mnemonicParsing="false" text="Установить время работы автоматической отправки запросов:" />
-        <TextField layoutX="156.0" layoutY="128.0" prefHeight="22.0" prefWidth="48.0" />
-        <TextField layoutX="248.0" layoutY="128.0" prefHeight="22.0" prefWidth="48.0" />
-        <Label layoutX="226.0" layoutY="132.0" text="по" />
-        <Label layoutX="138.0" layoutY="132.0" text="с" />
-        <TextField layoutX="424.0" layoutY="169.0" prefHeight="22.0" prefWidth="37.0" />
-        <CheckBox layoutX="81.0" layoutY="172.0" mnemonicParsing="false" text="Указать количество отправляемых запросов за сеанс работы:" />
-        <Button fx:id="idSaveSettings" layoutX="504.459228515625" layoutY="350.0" mnemonicParsing="false" onAction="#saveSettings" text="Сохранить" />
+            <Label layoutX="239.0" layoutY="62.0" text="часы" />
+            <Label layoutX="397.0" layoutY="62.0" text="секунды" />
+            <TextField fx:id="idMinutes" layoutX="274.0" layoutY="58.0" prefHeight="22.0" prefWidth="31.0" />
+            <Label layoutX="311.0" layoutY="62.0" text="минуты" />
+            <TextField fx:id="idSeconds" layoutX="360.0" layoutY="58.0" prefHeight="22.0" prefWidth="31.0" />
+            <TextField fx:id="idHours" layoutX="202.0" layoutY="58.0" prefHeight="22.0" prefWidth="31.0" />
+            <TextField fx:id="idDays" layoutX="134.0" layoutY="58.0" prefHeight="22.0" prefWidth="31.0" />
+            <CheckBox fx:id="autoSend" layoutX="83.0" layoutY="35.0" mnemonicParsing="false" text="Включить поочередную отправку запросов через заданный период времени:" />
+            <Label layoutX="93.0" layoutY="223.0" text="Данные по сертификату для подписи:" />
+            <TextField fx:id="keyAlias" layoutX="226.0" layoutY="282.0" prefHeight="22.0" prefWidth="278.0" />
+            <Label layoutX="188.0" layoutY="286.0" text="Ключ" />
+            <Label layoutX="177.0" layoutY="320.0" text="Пароль" />
+            <TextField fx:id="password" layoutX="226.0" layoutY="316.0" prefHeight="22.0" prefWidth="278.0" />
+            <CheckBox layoutX="82.0" layoutY="97.0" mnemonicParsing="false" text="Установить время работы автоматической отправки запросов:" />
+            <TextField layoutX="156.0" layoutY="128.0" prefHeight="22.0" prefWidth="48.0" />
+            <TextField layoutX="248.0" layoutY="128.0" prefHeight="22.0" prefWidth="48.0" />
+            <Label layoutX="226.0" layoutY="132.0" text="по" />
+            <Label layoutX="138.0" layoutY="132.0" text="с" />
+            <TextField layoutX="424.0" layoutY="169.0" prefHeight="22.0" prefWidth="37.0" />
+            <CheckBox layoutX="81.0" layoutY="172.0" mnemonicParsing="false" text="Указать количество отправляемых запросов за сеанс работы:" />
+            <Button fx:id="idSaveSettings" onAction="#saveSettings" layoutX="506.459228515625" layoutY="353.0" mnemonicParsing="false" text="Сохранить" />
+            <Label layoutX="167.0" layoutY="252.0" text="Название" />
+            <TextField fx:id="certAlias" layoutX="227.0" layoutY="247.0" prefHeight="22.0" prefWidth="278.0" />
     </children>
 </SettingsController>
 

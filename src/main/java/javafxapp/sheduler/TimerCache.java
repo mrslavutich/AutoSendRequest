@@ -23,7 +23,7 @@ public class TimerCache {
         TimerRequests timerRequests = new TimerRequests();
         timerRequests.setRequestXml(adapter.getRequestXml());
         timerRequests.setSmevAddress(adapter.getAdapterDetails().getSmevAddress());
-        timerRequests.setAdapterId(adapter.getAdapterDetails().getId210fz());
+        timerRequests.setAdapterId(adapter.getId210fz());
         requestsToSend.put(String.valueOf(adapter.getId()), timerRequests);
 
     }

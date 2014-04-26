@@ -1,5 +1,10 @@
 package javafxapp.sheduler;
 
+import javafxapp.adapter.domain.Adapter;
+import javafxapp.db.DatabaseUtil;
+import javafxapp.service.SendDataService;
+import javafxapp.utils.XMLParser;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -59,24 +64,24 @@ public class RequestTimer extends Thread implements IRequestTimer {
     public void sendRequests() {
         HashMap<String, TimerRequests> requests = new HashMap<String, TimerRequests>();
         requests.putAll(TimerCache.getInstance().requestsList());
-        if (requests != null) {
+        if (requests.size() > 0) {
             Set<String> keys = requests.keySet();
             Iterator<String> iterator = keys.iterator();
             while (iterator.hasNext()) {
                 String key = iterator.next();
                 try {
-                    if (requests.get(key).getRequestXml() != null) {
-                       /* String result = sendDataService.sendStatusByTimer(requests.get(key));
-                        String status = loadAdapterDefinition.requestStatusByXml(result);
-                        if (status.equals("Получен ответ")) {
-                            RequestXML requestXML = requestService.findXML(key);
-                            requestXML.setResponse(result);
-                            requestXML.setResponseJSON(sendDataService.simpleJsonForPdf(requestXML));
-                            requestXML.setStatus(status);
-                            requestXML.setData(DateUtil.YYYY_MM_DD_HH_MM_SS_S.format(new java.util.Date()));
-                            requestService.save(requestXML);
+                    TimerRequests timerRequests = requests.get(key);
+                    if (timerRequests.getRequestXml() != null) {
+                        String responseXml = SendDataService.sendDataToSMEV(timerRequests.getRequestXml(), timerRequests.getSmevAddress());
+                        String respStatus = XMLParser.getResponseStatus(responseXml);
+                        if (respStatus.equals("ACCEPT")) {
+                            Adapter adapter = new Adapter();
+                            adapter.setId(Integer.parseInt(key));
+                            adapter.setResponseXml(responseXml);
+                            adapter.setResponseStatus(respStatus);
+                            DatabaseUtil.saveResponse(adapter);
                             TimerCache.getInstance().deleteRequest(key);
-                        }*/
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

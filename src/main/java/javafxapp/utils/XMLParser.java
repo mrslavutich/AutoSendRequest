@@ -1,5 +1,6 @@
 package javafxapp.utils;
 
+import javafxapp.handleFault.FaultsUtils;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -17,8 +18,18 @@ public class XMLParser {
     private static final String FAULTSTRING = "faultstring";
     private static final String STATUS = "Status";
 
+    public static String getResponseStatus(String responseXml) throws Exception {
+        String responseStatus = FaultsUtils.findFaultsInResponseXML(responseXml);
+        if (responseStatus == null){
+            responseStatus = getStatusElement(responseXml);
+        }
+        if (responseStatus == null){
+            responseStatus = "Ошибка";
+        }
+        return responseStatus;
+    }
 
-    public static String getStatusElement(String xml) throws Exception {
+    private static String getStatusElement(String xml) throws Exception {
         Document doc = parseDocFromByte(xml.getBytes());
         Element elem = getDocSmevElement(doc, STATUS);
         if (elem != null) {

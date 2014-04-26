@@ -15,8 +15,7 @@ public enum Fault {
     CERTIFICATE_NOT_FOUND("certificate not found", "Не найден сертификат", Category.SIGN),
     HDIMEGESTORE_NOT_FOUND("HDImageStore not found", "Не найдено хранилище сертификатов", Category.SIGN),
     KEY_NOT_FOUND("key not found", "Не найден ключ", Category.SIGN),
-    FLOPPY_NOT_FOUND("Floppy not found", "Носитель с подписью не подключен к компьютеру", Category.SIGN),
-    IFCPLUGIN_NOT_FOUND("ifcplugin not found", "Не найден плагин подписания", Category.SIGN);
+    ACCESS_SERVICE("Connection timed out: connect", "Адрес сервиса недоступен", Category.SIGN);
 
     public enum Category {
         SEND_ERROR("Ошибка при отправке"),

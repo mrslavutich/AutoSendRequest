@@ -25,31 +25,35 @@ public class BuilderRequest {
         return adapter;
     }*/
 
-    public static List<String> buildRequestByTemplate(List<FNS> fnsList) throws Exception {
+    public static List<String> buildRequestByTemplate(List<FNS> fnsList)  {
         Configuration cfg = new Configuration();
-        Template template = cfg.getTemplate("src/main/java/javafxapp/adapter/fns/request.ftl");
+        List<String> requests = new ArrayList<>();
+        try {
+            Template template = cfg.getTemplate("src/main/java/javafxapp/adapter/fns/request.ftl");
 
         /*SmevFields SmevFields = (SmevFields) innerMapper.fillSmevPojo(null, new FNS());
         fns.setIsInn("on");
         List<String> listInn = new ArrayList<>();
         listInn.add("500100732259");
         fns.setInn(listInn);*/
-        StringWriter out = null;
-        List<String> requests = new ArrayList<>();
-        for (FNS pojo: fnsList) {
-            Field[] fields = pojo.getClass().getFields();
-            Map<String, Object> map = new HashMap<String, Object>();
-            for (Field f : fields) {
-                map.put(f.getName(), f.get(pojo));
-            }
-            out = new StringWriter();
-            template.process(map, out);
-            String result = new String(out.getBuffer().toString().getBytes("UTF-8"), "UTF-8");
-            out.flush();
-            out.close();
-            result = WSSTool.signSoapRequest(result);
+            StringWriter out = null;
+            for (FNS pojo : fnsList) {
+                Field[] fields = pojo.getClass().getFields();
+                Map<String, Object> map = new HashMap<String, Object>();
+                for (Field f : fields) {
+                    map.put(f.getName(), f.get(pojo));
+                }
+                out = new StringWriter();
+                template.process(map, out);
+                String result = new String(out.getBuffer().toString().getBytes("UTF-8"), "UTF-8");
+                out.flush();
+                out.close();
+                result = WSSTool.signSoapRequest(result);
 
-            requests.add(result);
+                requests.add(result);
+            }
+        }catch (Exception e){
+            throw new RuntimeException(e.getLocalizedMessage());
         }
 
         return requests;

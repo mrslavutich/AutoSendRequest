@@ -9,6 +9,7 @@ public class Adapter {
     private String requestXml;
     private String responseXml;
     private String responseStatus;
+    private String dateCall;
 
     public Integer getId() {
         return id;
@@ -64,5 +65,13 @@ public class Adapter {
 
     public void setAdapterDetails(AdapterDetails adapterDetails) {
         this.adapterDetails = adapterDetails;
+    }
+
+    public String getDateCall() {
+        return dateCall;
+    }
+
+    public void setDateCall(String dateCall) {
+        this.dateCall = dateCall;
     }
 }
