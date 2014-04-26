@@ -13,6 +13,7 @@ import javafx.stage.FileChooser;
 import javafxapp.Main;
 import javafxapp.adapter.Register;
 import javafxapp.adapter.domain.Adapter;
+import javafxapp.adapter.domain.AdapterDetails;
 import javafxapp.adapter.domain.Settings;
 import javafxapp.adapter.fns.FNS;
 import javafxapp.db.DatabaseUtil;
@@ -24,7 +25,9 @@ import javafxapp.utils.XMLParser;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.*;
 
 public class MainController extends VBox implements Initializable {
@@ -67,26 +70,34 @@ public class MainController extends VBox implements Initializable {
     @FXML
     public void handleSubmitSendRequests(ActionEvent event) throws Exception {
 
-        boolean isFileOpen;
         try {
             new FileOutputStream(filePath.getText());
-            isFileOpen = true;
         } catch (IOException e) {
-            isFileOpen = false;
+            ErrorController.showDialogWithException("Закройте файл: " + filePath.getText());
         }
-        if (isFileOpen) {
-            if (checkboxFNS.isSelected()) {
+        if (checkboxFNS.isSelected()) {
+            if (addressFNS.getText() == null || addressFNS.getText().isEmpty()){
+                ErrorController.showDialog("Укажите адрес сервиса ФНС");
+            }else {
+                checkAccessService(addressFNS.getText(), Register.FNS.foiv);
                 int countSentReqIp = sendFNSReq("07");
                 int countSentReqUl = sendFNSReq("07_2");
                 countFNSSentReq.setText(String.valueOf(countSentReqIp + countSentReqUl));
-                /*countFNSSentReq.getStyleClass().add("fontBold");
-                countFNSRequests.getStyleClass().add("fontNormal");*/
                 countFNSRequests.setText("0");
+                DatabaseUtil.saveAddressService(addressFNS.getText(), "07");
             }
-        }else{
-            ErrorController.showDialog("Закройте файл: " + filePath.getText());
         }
 
+    }
+
+    private void checkAccessService(String address, String foiv) throws MalformedURLException {
+        URL url = new URL(address);
+        try {
+            URLConnection urlConnection = url.openConnection();
+            urlConnection.getInputStream();
+        }catch (Exception e){
+            ErrorController.showDialogWithException(FaultsUtils.modifyMessage(e.getMessage()), foiv);
+        }
     }
 
     private int sendFNSReq(String id210fz) throws Exception {
@@ -96,28 +107,22 @@ public class MainController extends VBox implements Initializable {
         for(Adapter adapter: adapters) {
             i++;
             String responseXml = SendDataService.sendDataToSMEV(adapter.getRequestXml(), addressFNS.getText());
-            String respStatus = getResponseStatus(responseXml);
-            DatabaseUtil.saveResponse(responseXml, respStatus, adapter.getNumReq(), id210fz);
+            String respStatus = XMLParser.getResponseStatus(responseXml);
+            adapter.setResponseXml(responseXml);
+            adapter.setResponseStatus(respStatus);
+            adapter.setId210fz(id210fz);
+            DatabaseUtil.saveResponse(adapter);
             listStatus.add(respStatus);
         }
         ReadExcelFile.writeFNSStatus(listStatus, id210fz, filePath.getText());
         return i;
     }
 
-    private String getResponseStatus(String responseXml) throws Exception {
-        String responseStatus = FaultsUtils.findFaultsInResponse(responseXml);
-        if (responseStatus == null){
-            responseStatus = XMLParser.getStatusElement(responseXml);
-        }
-        if (responseStatus == null){
-            responseStatus = "Ошибка";
-        }
-        return responseStatus;
-    }
+
 
     @FXML
-    public void handleSubmitLoadData(ActionEvent event) throws Exception {
-        if (filePath !=null && !filePath.getText().equals("")) {
+    public void handleSubmitLoadData(ActionEvent event){
+        if (filePath != null && !filePath.getText().isEmpty()) {
             HashMap<String, List<FNS>> mapFns = null;
             try {
                 mapFns = ReadExcelFile.readFNSData(filePath.getText());
@@ -127,14 +132,10 @@ public class MainController extends VBox implements Initializable {
             if (mapFns != null) {
                 List<String> requestsIp = BuilderRequest.buildRequestByTemplate(mapFns.get(Register.FNS.adapter));
                 List<String> requestsUl = BuilderRequest.buildRequestByTemplate(mapFns.get(Register.FNS.adapterUL));
-                DatabaseUtil.insertRequests(Register.FNS.foiv, requestsIp, requestsUl);
+                DatabaseUtil.insertRequests(requestsIp, requestsUl);
 
                 int countFnsReq = requestsIp.size() + requestsUl.size();
                 countFNSRequests.setText(String.valueOf(countFnsReq));
-        /*countFNSRequests.getStyleClass().remove("fontNormal");
-        countFNSRequests.getStyleClass().add("fontBold");
-        countFNSSentReq.getStyleClass().remove("fontBold");
-        countFNSSentReq.getStyleClass().add("fontNormal");*/
                 countFNSSentReq.setText("0");
             }
         }
@@ -182,7 +183,12 @@ public class MainController extends VBox implements Initializable {
         }
         /*else idLoadData.setDisable(true);*/
 
-
+        List<AdapterDetails> adapterDetailsList = DatabaseUtil.getAdapterDetails();
+        for (AdapterDetails adapterDetails: adapterDetailsList){
+            addressFNS.setText(adapterDetails.getSmevAddress());
+            addressMVD.setText(adapterDetails.getSmevAddress());
+            addressPFR.setText(adapterDetails.getSmevAddress());
+        }
 
 
     }

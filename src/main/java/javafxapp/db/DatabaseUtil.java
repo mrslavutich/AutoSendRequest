@@ -1,7 +1,9 @@
 package javafxapp.db;
 
 import javafxapp.adapter.domain.Adapter;
+import javafxapp.adapter.domain.AdapterDetails;
 import javafxapp.adapter.domain.Settings;
+import javafxapp.controller.SettingsController;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -33,6 +35,7 @@ public class DatabaseUtil {
                     "requestXml VARCHAR(32), " +
                     "responseXml VARCHAR(32), " +
                     "responseStatus VARCHAR(32)," +
+                    "dateCall VARCHAR(32),"+
                     "FOREIGN KEY(id210fz) REFERENCES adapterDetails(id210fz));" +
 
                     "CREATE TABLE adapterDetails (id210fz VARCHAR(32) PRIMARY KEY, " +
@@ -54,7 +57,7 @@ public class DatabaseUtil {
                     "INSERT INTO adapterDetails (id210fz, smevAddress, foiv, adapterName) VALUES ('07', 'http://192.168.100.96:7777/gateway/services/SID0003245', 'ФНС','(Сведения из ЕГРИП)');" +
                     "INSERT INTO adapterDetails (id210fz, smevAddress, foiv, adapterName) VALUES ('07_2', 'http://192.168.100.96:7777/gateway/services/SID0003245', 'ФНС','(Сведения из ЕГРЮЛ)');" +
 
-                    "INSERT INTO settings (pathFile, key_alias, cert_alias, password) VALUES ('C:\\', 'RaUser-2908cdc2-4aff-47c6-9636-d2a98ba3d2b5','RaUser-2908cdc2-4aff-47c6-9636-d2a98ba3d2b5','1234567890');";
+                    "INSERT INTO settings (pathFile, key_alias, cert_alias, password) VALUES ('', 'RaUser-2908cdc2-4aff-47c6-9636-d2a98ba3d2b5','RaUser-2908cdc2-4aff-47c6-9636-d2a98ba3d2b5','1234567890');";
             try {
                 statement = connection.createStatement();
                 statement.executeUpdate(query);
@@ -65,17 +68,17 @@ public class DatabaseUtil {
         }
     }
 
-    public static void insertRequests(String foiv, List<String> requestsIp, List<String> requestsUl) {
+    public static void insertRequests(List<String> requestsIp, List<String> requestsUl) {
         try {
             clearTable("ADAPTER");
 
             statement = connection.createStatement();
             String query = "";
             for (int i = 0; i < requestsIp.size(); i++) {
-                query += "INSERT INTO adapter (id210fz, numReq, requestXml) VALUES ('07', " + i + ", '" + requestsIp.get(i) + "');";
+                query += "INSERT INTO adapter (id210fz, numReq, requestXml, responseStatus) VALUES ('07', " + i + ", '" + requestsIp.get(i) + "', '');";
             }
             for (int i = 0; i < requestsUl.size(); i++) {
-                query += "INSERT INTO adapter (id210fz, numReq, requestXml) VALUES ('07_2', " + i + ", '" + requestsIp.get(i) + "');";
+                query += "INSERT INTO adapter (id210fz, numReq, requestXml, responseStatus) VALUES ('07_2', " + i + ", '" + requestsIp.get(i) + "', '');";
             }
             statement.executeUpdate(query);
             statement.close();
@@ -87,7 +90,7 @@ public class DatabaseUtil {
     public static void savePathFile(String path) {
         try {
             statement = connection.createStatement();
-            String query = "UPDATE settings SET pathFile='" + path + "');";
+            String query = "UPDATE settings SET pathFile='" + path + "';";
             statement.executeUpdate(query);
             statement.close();
         } catch (SQLException e) {
@@ -190,18 +193,23 @@ public class DatabaseUtil {
         return adapters;
     }
 
-    public static void saveResponse(String responseXml, String respStatus, int numReq, String id210fz) {
+    public static void saveResponse(Adapter adapter) {
         try {
             statement = connection.createStatement();
-            String query = "SELECT count(*) FROM adapter WHERE numReq = '" + numReq + "' and id210fz = '" + id210fz + "'";
-            ResultSet resultSet = statement.executeQuery(query);
-            String isExist = "";
-            while (resultSet.next()) {
-                isExist = resultSet.getString(1);
-            }
-            if (!isExist.equals("")) {
-                query = "UPDATE adapter SET responseXml = '" + responseXml + "', responseStatus = '" + respStatus + "';";
-            }
+            String query = "UPDATE adapter SET responseXml = '" + adapter.getResponseXml() + "', responseStatus = '" + adapter.getResponseStatus() + "', dateCall = '" + new java.util.Date() + "'" +
+                        "WHERE numReq = '" + adapter.getNumReq() + "' and id210fz = '" + adapter.getId210fz() + "';";
+            statement.executeUpdate(query);
+            statement.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void saveResponseById(Adapter adapter) {
+        try {
+            statement = connection.createStatement();
+            String query = "UPDATE adapter SET responseXml = '" + adapter.getResponseXml() + "', responseStatus = '" + adapter.getResponseStatus() + "', dateCall = '" + new java.util.Date() + "'" +
+                            "WHERE id = '" + adapter.getId() + "';";
             statement.executeUpdate(query);
             statement.close();
         } catch (SQLException e) {
@@ -213,15 +221,20 @@ public class DatabaseUtil {
         List<Adapter> adapterList = new ArrayList<>();
         try {
             statement = connection.createStatement();
-            String query = "SELECT ID, numReq, requestXml, adapterName FROM adapter WHERE responseStatus NOT LIKE 'ACCEPT';";
+            String query = "SELECT ID, numReq, requestXml, id210fz, smevAddress, adapterName FROM adapter " +
+                    "NATURAL JOIN adapterDetails WHERE responseStatus NOT LIKE 'ACCEPT';";
             ResultSet resultSet = statement.executeQuery(query);
             Adapter adapter;
             while (resultSet.next()) {
                 adapter = new Adapter();
-                adapter.setId(resultSet.getInt(1));
-                adapter.setNumReq(resultSet.getInt(2));
-                adapter.setRequestXml(resultSet.getString(3));
-//                adapter.setAdapterName(resultSet.getString(4));
+                adapter.setId(resultSet.getInt("ID"));
+                adapter.setNumReq(resultSet.getInt("numReq"));
+                adapter.setId210fz(resultSet.getString("id210fz"));
+                adapter.setRequestXml(resultSet.getString("requestXml"));
+                AdapterDetails adapterDetails = new AdapterDetails();
+                adapterDetails.setSmevAddress(resultSet.getString("smevAddress"));
+                adapterDetails.setAdapterName(resultSet.getString("adapterName"));
+                adapter.setAdapterDetails(adapterDetails);
                 adapterList.add(adapter);
             }
             statement.close();
@@ -231,14 +244,43 @@ public class DatabaseUtil {
         return adapterList;
     }
 
-    public static void saveSettings(Settings settings) {
+    public static void saveSettings() {
         try {
             statement = connection.createStatement();
-            String query = "UPDATE settings SET key_alias='" + settings.getKeyAlias() + "', password ='" + settings.getPassword() + "';";
+            String query = "UPDATE settings SET key_alias='" + SettingsController.keyAlias.getText() + "', key_alias='" + SettingsController.certAlias.getText() + "', password ='" + SettingsController.password.getText() + "';";
             statement.executeUpdate(query);
             statement.close();
         } catch (SQLException e) {
-            System.out.println("Ошибка при сохранение пути к файлу " + e.getMessage());
+            System.out.println(e.getMessage());
         }
+    }
+
+    public static void saveAddressService(String address, String id210fz) {
+        try {
+            statement = connection.createStatement();
+            String query = "UPDATE adapterDetails SET  smevAddress ='" + address + "' WHERE id210fz in ('" + id210fz + "','" + id210fz + "_2');";
+            statement.executeUpdate(query);
+            statement.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static List<AdapterDetails> getAdapterDetails() {
+        List<AdapterDetails> listAdapterDetails = new ArrayList<>();
+        try {
+            statement = connection.createStatement();
+            String query = "SELECT smevAddress FROM adapterDetails";
+            ResultSet resultSet = statement.executeQuery(query);
+            AdapterDetails adapterDetails;
+            while (resultSet.next()) {
+                adapterDetails = new AdapterDetails();
+                adapterDetails.setSmevAddress(resultSet.getString(1));
+            }
+            statement.close();
+        } catch (SQLException e) {
+            System.out.println("Ошибка при сохранение служебных полей " + e.getMessage());
+        }
+        return listAdapterDetails;
     }
 }
