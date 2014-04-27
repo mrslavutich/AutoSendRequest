@@ -2,6 +2,7 @@ package javafxapp.controller;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import javafxapp.adapter.domain.Adapter;
 import javafxapp.adapter.fns.FNS;
 import javafxapp.crypto.WSSTool;
 import javafxapp.utils.Mapper;
@@ -25,9 +26,9 @@ public class BuilderRequest {
         return adapter;
     }*/
 
-    public static List<String> buildRequestByTemplate(List<FNS> fnsList)  {
+    public static List<Adapter> buildRequestByTemplate(List<FNS> fnsList)  {
         Configuration cfg = new Configuration();
-        List<String> requests = new ArrayList<>();
+        List<Adapter> adapters = new ArrayList<>();
         try {
             Template template = cfg.getTemplate("src/main/java/javafxapp/adapter/fns/request.ftl");
 
@@ -36,6 +37,7 @@ public class BuilderRequest {
         List<String> listInn = new ArrayList<>();
         listInn.add("500100732259");
         fns.setInn(listInn);*/
+            Adapter adapter;
             StringWriter out = null;
             for (FNS pojo : fnsList) {
                 Field[] fields = pojo.getClass().getFields();
@@ -49,14 +51,18 @@ public class BuilderRequest {
                 out.flush();
                 out.close();
                 result = WSSTool.signSoapRequest(result);
-
-                requests.add(result);
+                adapter = new Adapter();
+                if (pojo.getIsInn().equals("on")) adapter.setDeclarant("ip");
+                if (pojo.getIsOgrn().equals("on")) adapter.setDeclarant("ul");
+                adapter.setNumReq(pojo.getRowNum());
+                adapter.setRequestXml(result);
+                adapters.add(adapter);
             }
         }catch (Exception e){
             throw new RuntimeException(e.getLocalizedMessage());
         }
 
-        return requests;
+        return adapters;
     }
 
     public static FNS fillSmevFieldsDefault() throws Exception {

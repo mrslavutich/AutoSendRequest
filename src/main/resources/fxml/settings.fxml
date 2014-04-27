@@ -1,50 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
+<?import javafxapp.elements.IntervalTimeTextField?>
 <?import javafxapp.controller.SettingsController?>
+<?import javafxapp.elements.TimeTextField?>
+<?import javafxapp.elements.NumberTextField?>
 <SettingsController maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafxapp.controller.SettingsController" >
     <children>
         <Label layoutX="171.0" layoutY="62.0" text="дни" />
             <Label layoutX="239.0" layoutY="62.0" text="часы" />
             <Label layoutX="397.0" layoutY="62.0" text="секунды" />
-            <TextField fx:id="idMinutes" layoutX="274.0" layoutY="58.0" prefHeight="22.0" prefWidth="31.0" />
+            <IntervalTimeTextField fx:id="idMinutes" alignment="BASELINE_CENTER" layoutX="274.0" layoutY="58.0" prefHeight="22.0" prefWidth="31.0" />
             <Label layoutX="311.0" layoutY="62.0" text="минуты" />
-            <TextField fx:id="idSeconds" layoutX="360.0" layoutY="58.0" prefHeight="22.0" prefWidth="31.0" />
-            <TextField fx:id="idHours" layoutX="202.0" layoutY="58.0" prefHeight="22.0" prefWidth="31.0" />
-            <TextField fx:id="idDays" layoutX="134.0" layoutY="58.0" prefHeight="22.0" prefWidth="31.0" />
+            <IntervalTimeTextField fx:id="idSeconds" alignment="BASELINE_CENTER" layoutX="360.0" layoutY="58.0" prefHeight="22.0" prefWidth="31.0" />
+            <IntervalTimeTextField fx:id="idHours" alignment="BASELINE_CENTER" layoutX="202.0" layoutY="58.0" prefHeight="22.0" prefWidth="31.0" />
+            <IntervalTimeTextField fx:id="idDays" alignment="BASELINE_CENTER" layoutX="134.0" layoutY="58.0" prefHeight="22.0" prefWidth="31.0" />
             <CheckBox fx:id="autoSend" layoutX="83.0" layoutY="35.0" mnemonicParsing="false" text="Включить поочередную отправку запросов через заданный период времени:" />
             <Label layoutX="93.0" layoutY="223.0" text="Данные по сертификату для подписи:" />
             <TextField fx:id="keyAlias" layoutX="226.0" layoutY="282.0" prefHeight="22.0" prefWidth="278.0" />
             <Label layoutX="188.0" layoutY="286.0" text="Ключ" />
             <Label layoutX="177.0" layoutY="320.0" text="Пароль" />
             <TextField fx:id="password" layoutX="226.0" layoutY="316.0" prefHeight="22.0" prefWidth="278.0" />
-            <CheckBox layoutX="82.0" layoutY="97.0" mnemonicParsing="false" text="Установить время работы автоматической отправки запросов:" />
-            <TextField layoutX="156.0" layoutY="128.0" prefHeight="22.0" prefWidth="48.0" />
-            <TextField layoutX="248.0" layoutY="128.0" prefHeight="22.0" prefWidth="48.0" />
+            <CheckBox fx:id="timeWork" layoutX="82.0" layoutY="97.0" mnemonicParsing="false" text="Установить время работы автоматической отправки запросов:" />
+            <TimeTextField fx:id="startTime" alignment="BASELINE_CENTER" layoutX="156.0" layoutY="128.0" prefHeight="22.0" prefWidth="48.0" />
+            <TimeTextField fx:id="endTime" alignment="BASELINE_CENTER" layoutX="248.0" layoutY="128.0" prefHeight="22.0" prefWidth="48.0" />
             <Label layoutX="226.0" layoutY="132.0" text="по" />
             <Label layoutX="138.0" layoutY="132.0" text="с" />
-            <TextField layoutX="424.0" layoutY="169.0" prefHeight="22.0" prefWidth="37.0" />
-            <CheckBox layoutX="81.0" layoutY="172.0" mnemonicParsing="false" text="Указать количество отправляемых запросов за сеанс работы:" />
+            <NumberTextField fx:id="countReqField" layoutX="424.0"  layoutY="169.0" prefHeight="22.0" prefWidth="37.0" />
+            <CheckBox fx:id="checkBoxCountReq" layoutX="81.0" layoutY="172.0" mnemonicParsing="false" text="Указать количество отправляемых запросов за сеанс работы:" />
             <Button fx:id="idSaveSettings" onAction="#saveSettings" layoutX="506.459228515625" layoutY="353.0" mnemonicParsing="false" text="Сохранить" />
             <Label layoutX="167.0" layoutY="252.0" text="Название" />
             <TextField fx:id="certAlias" layoutX="227.0" layoutY="247.0" prefHeight="22.0" prefWidth="278.0" />
     </children>
 </SettingsController>
 
-
-
-
-
-<!--
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-<children>
-    <Label layoutX="171.0" layoutY="82.0" text="дни" />
-    <Label layoutX="239.0" layoutY="82.0" text="часы" />
-    <Label layoutX="397.0" layoutY="82.0" text="секунды" />
-    <TextField fx:id="idMinutes" layoutX="274.0" layoutY="78.0" prefHeight="22.0" prefWidth="31.0" />
-    <Label layoutX="311.0" layoutY="82.0" text="минуты" />
-    <TextField fx:id="idSeconds" layoutX="360.0" layoutY="78.0" prefHeight="22.0" prefWidth="31.0" />
-    <TextField fx:id="idHours" layoutX="202.0" layoutY="78.0" prefHeight="22.0" prefWidth="31.0" />
-    <TextField fx:id="idDays" layoutX="134.0" layoutY="78.0" prefHeight="22.0" prefWidth="31.0" />
-    <CheckBox fx:id="autoSend" layoutX="83.0" layoutY="55.0" mnemonicParsing="false" text="Включить поочередную отправку запросов через заданный период времени:" /><Label layoutX="93.0" layoutY="252.0" text="Данные по сертификату для подписи:" /><TextField fx:id="keyAlias" layoutX="276.0" layoutY="278.0" /><Label layoutX="155.0" layoutY="282.0" text="Ключ сертификата" /><Label layoutX="212.0" layoutY="316.0" text="Пароль" /><TextField fx:id="password" layoutX="275.0" layoutY="312.0" /><CheckBox layoutX="82.0" layoutY="117.0" mnemonicParsing="false" text="Установить время работы автоматической отправки запросов:" /><TextField layoutX="156.0" layoutY="148.0" prefHeight="22.0" prefWidth="37.0" /><TextField layoutX="248.0" layoutY="148.0" prefHeight="22.0" prefWidth="38.0" /><Label layoutX="226.0" layoutY="152.0" text="по" /><Label layoutX="138.0" layoutY="152.0" text="с" /><TextField layoutX="424.0" layoutY="189.0" prefHeight="22.0" prefWidth="37.0" /><CheckBox layoutX="81.0" layoutY="192.0" mnemonicParsing="false" text="Указать количество отправляемых запросов за сеанс работы:" />
-</children></Pane>-->

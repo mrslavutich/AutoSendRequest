@@ -12,11 +12,17 @@ import javafxapp.adapter.domain.Adapter;
 import javafxapp.adapter.domain.Settings;
 import javafxapp.crypto.WSSTool;
 import javafxapp.db.DatabaseUtil;
+import javafxapp.elements.NumberTextField;
+import javafxapp.elements.TimeTextField;
 import javafxapp.handleFault.FaultsUtils;
 import javafxapp.sheduler.RequestTimer;
 import javafxapp.sheduler.TimerCache;
+import javafxapp.utils.ReadExcelFile;
 
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -40,23 +46,51 @@ public class SettingsController extends Pane implements Initializable{
     public static TextField password;
     @FXML
     public Button idSaveSettings;
+    @FXML
+    private TimeTextField startTime;
+    @FXML
+    private TimeTextField endTime;
+    @FXML
+    private CheckBox timeWork;
+    @FXML
+    private NumberTextField countReqField;
+    @FXML
+    private CheckBox checkBoxCountReq;
 
     RequestTimer requestTimer;
 
+    List<Adapter> adapters;
+
     @FXML
-    public void saveSettings(ActionEvent event)  {
+    public void saveSettings(ActionEvent event) throws ParseException {
+        Date startWork = null, endWork = null;
+        int countReq = Integer.MAX_VALUE;
+        if (timeWork.isSelected()) {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            startWork = sdf.parse(startTime.getText());
+            endWork = sdf.parse(endTime.getText());
+        }
+
+        if (checkBoxCountReq.isSelected()) {
+            if (!countReqField.getText().isEmpty())
+                countReq = Integer.parseInt(countReqField.getText());
+        }
+
         requestTimer = new RequestTimer();
         if (autoSend.isSelected()) {
-            List<Adapter> adapters = DatabaseUtil.findReqReadyToSend();
 
+            adapters = DatabaseUtil.findReqReadyToSend(countReq);
             for (Adapter adapter : adapters) {
                 TimerCache.getInstance().addRequest(adapter);
             }
-            requestTimer.startRequest(Integer.parseInt(idMinutes.getText()), "min");
-
+            requestTimer.startRequest(idDays.getText(), idHours.getText(), idMinutes.getText(), idSeconds.getText(),
+                                        startWork, endWork);
         } else {
+            if (adapters != null && adapters.size() > 0) {
+                List<Adapter> adapterList = DatabaseUtil.getResponseStatus(adapters);
+                ReadExcelFile.writeFNSStatus(adapterList, MainController.filePath.getText());
+            }
             requestTimer.stopRequest();
-            idDays.getStyleClass().add("disabled");
         }
         try {
             if (!certAlias.getText().isEmpty() && !keyAlias.getText().isEmpty() && !password.getText().isEmpty()) {

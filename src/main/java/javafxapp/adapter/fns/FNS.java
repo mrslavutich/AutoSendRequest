@@ -12,7 +12,7 @@ public class FNS extends SmevFields {
     public String isOgrn;
     public String isInn;
     public String ИдЗапросФ;
-
+    public int rowNum;
 
     public String getOgrn() {
         return ogrn;
@@ -62,6 +62,11 @@ public class FNS extends SmevFields {
         this.idDoc = UUID.randomUUID().toString();
     }
 
+    public int getRowNum() {
+        return rowNum;
+    }
 
-
+    public void setRowNum(int rowNum) {
+        this.rowNum = rowNum;
+    }
 }

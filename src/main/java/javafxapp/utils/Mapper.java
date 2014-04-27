@@ -42,6 +42,15 @@ public class Mapper {
                         continue;
                     }
                 }
+                if (parametrMethod.equals("int")) {
+                    try {
+                        currentMethod.invoke(object, 0);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        continue;
+                    }
+                }
                 if (parametrMethod.equals("java.util.List")) {
                     try {
                         currentMethod.invoke(object, new ArrayList<Object>());

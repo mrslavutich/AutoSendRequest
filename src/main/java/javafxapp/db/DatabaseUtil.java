@@ -16,10 +16,9 @@ import java.util.Map;
  */
 public class DatabaseUtil {
 
+    private static final String adapter_query = "SELECT ID, numReq, requestXml, id210fz, smevAddress, adapterName, responseStatus FROM adapter NATURAL JOIN adapterDetails";
     private static Connection connection;
     private static Statement statement;
-    private static final String status_ready = "На отправку";
-    private static String status_sent = "Отправлено";
 
     public static void createDB() {
         if (connection == null) {
@@ -58,108 +57,75 @@ public class DatabaseUtil {
                     "INSERT INTO adapterDetails (id210fz, smevAddress, foiv, adapterName) VALUES ('07_2', 'http://192.168.100.96:7777/gateway/services/SID0003245', 'ФНС','(Сведения из ЕГРЮЛ)');" +
 
                     "INSERT INTO settings (pathFile, key_alias, cert_alias, password) VALUES ('', 'RaUser-2908cdc2-4aff-47c6-9636-d2a98ba3d2b5','RaUser-2908cdc2-4aff-47c6-9636-d2a98ba3d2b5','1234567890');";
-            try {
-                statement = connection.createStatement();
-                statement.executeUpdate(query);
-                statement.close();
-            } catch (SQLException e) {
-                e.getMessage();
-            }
+            executeUpdate(query);
         }
     }
 
-    public static void insertRequests(List<String> requestsIp, List<String> requestsUl) {
-        try {
-            clearTable("ADAPTER");
+    public static void insertRequests(List<Adapter> adapters) {
+        clearTable("ADAPTER");
 
-            statement = connection.createStatement();
-            String query = "";
-            for (int i = 0; i < requestsIp.size(); i++) {
-                query += "INSERT INTO adapter (id210fz, numReq, requestXml, responseStatus) VALUES ('07', " + i + ", '" + requestsIp.get(i) + "', '');";
-            }
-            for (int i = 0; i < requestsUl.size(); i++) {
-                query += "INSERT INTO adapter (id210fz, numReq, requestXml, responseStatus) VALUES ('07_2', " + i + ", '" + requestsIp.get(i) + "', '');";
-            }
-            statement.executeUpdate(query);
-            statement.close();
-        } catch (SQLException e) {
-            System.out.println("Ошибка при сохранении запросов " + e.getMessage());
+        String query = "", id210fz = "";
+        for (Adapter adapter: adapters) {
+            if (adapter.getDeclarant() != null && adapter.getDeclarant().equals("ip"))
+                id210fz = "07";
+            else if (adapter.getDeclarant() != null && adapter.getDeclarant().equals("ul"))
+                id210fz = "07_2";
+            query += "INSERT INTO adapter (id210fz, numReq, requestXml, responseStatus) VALUES ('"+ id210fz +"', " + adapter.getNumReq() + ", '" + adapter.getRequestXml() + "', '');";
         }
+        executeUpdate(query);
     }
 
     public static void savePathFile(String path) {
-        try {
-            statement = connection.createStatement();
-            String query = "UPDATE settings SET pathFile='" + path + "';";
-            statement.executeUpdate(query);
-            statement.close();
-        } catch (SQLException e) {
-            System.out.println("Ошибка при сохранение пути к файлу " + e.getMessage());
-        }
+        String query = "UPDATE settings SET pathFile='" + path + "';";
+        executeUpdate(query);
     }
 
     public static void saveSmevFields(String foiv, HashMap<String, String> smevFileds) {
-        try {
-            clearTable("smevfield");
+        clearTable("smevfield");
+        String query = "";
+        for (Map.Entry<String, String> entry : smevFileds.entrySet()) {
+            query += "INSERT INTO smevfield (name, value, foiv) VALUES ('" + entry.getKey() + "', '" + entry.getValue() + "', '" + foiv + "');";
 
-            statement = connection.createStatement();
-            String query = "";
-            for (Map.Entry<String, String> entry : smevFileds.entrySet()) {
-                query += "INSERT INTO smevfield (name, value, foiv) VALUES ('" + entry.getKey() + "', '" + entry.getValue() + "', '" + foiv + "');";
-
-            }
-            statement.executeUpdate(query);
-            statement.close();
-        } catch (SQLException e) {
-            System.out.println("Ошибка при сохранение служебных полей " + e.getMessage());
         }
+        executeUpdate(query);
     }
 
     public static Settings getSettings() {
         Settings settings = new Settings();
+        String query = "SELECT pathFile, key_alias, cert_alias, password FROM settings";
+        ResultSet resultSet = executeQuery(query);
         try {
-            statement = connection.createStatement();
-            String query = "SELECT pathFile, key_alias, cert_alias, password FROM settings";
-            ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 settings.setPathFile(resultSet.getString(1));
                 settings.setKeyAlias(resultSet.getString(2));
                 settings.setCertAlias(resultSet.getString(3));
                 settings.setPassword(resultSet.getString(4));
             }
-            statement.close();
         } catch (SQLException e) {
-            System.out.println("Ошибка при сохранение служебных полей " + e.getMessage());
+            e.printStackTrace();
         }
+
         return settings;
     }
 
     public static HashMap<String, String> getSmevFields(String foiv) {
-        HashMap<String, String> hashMap = null;
-        try {
-            statement = connection.createStatement();
+        HashMap<String, String> hashMap = new HashMap<>();
             String query = "SELECT name, value FROM smevfield WHERE foiv = '" + foiv + "'";
-            ResultSet resultSet = statement.executeQuery(query);
-            hashMap = new HashMap<>();
+            ResultSet resultSet = executeQuery(query);
+        try {
             while (resultSet.next()) {
-                hashMap.put(resultSet.getString(1), resultSet.getString(2));
+                hashMap.put(resultSet.getString("name"), resultSet.getString("value"));
             }
-            statement.close();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
+
         return hashMap;
     }
 
-    private static void clearTable(String nameTable) throws SQLException {
-        try {
-            statement = connection.createStatement();
-            String dropQuery = "delete from " + nameTable;
-            statement.executeUpdate(dropQuery);
-            statement.close();
-        } catch (SQLException e) {
-            System.out.println("Не может очистить таблицу: " + nameTable + " Message:" + e.getMessage());
-        }
+    private static void clearTable(String nameTable) {
+        String dropQuery = "delete from " + nameTable;
+        executeUpdate(dropQuery);
     }
 
     public static void close() {
@@ -175,112 +141,116 @@ public class DatabaseUtil {
 
     public static List<Adapter> getRequest(String id210fz) {
         List<Adapter> adapters = new ArrayList<>();
-        try {
-            statement = connection.createStatement();
-            String query = "SELECT numReq, requestXml FROM adapter WHERE id210fz = '" + id210fz + "'";
-            ResultSet resultSet = statement.executeQuery(query);
-            Adapter adapter;
-            while (resultSet.next()) {
-                adapter = new Adapter();
-                adapter.setNumReq(resultSet.getInt(1));
-                adapter.setRequestXml(resultSet.getString(2));
-                adapters.add(adapter);
-            }
-            statement.close();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        String query = adapter_query + " WHERE id210fz = '" + id210fz + "'";
+        getAdapter(adapters, query);
         return adapters;
     }
 
     public static void saveResponse(Adapter adapter) {
-        try {
-            statement = connection.createStatement();
-            String query = "UPDATE adapter SET responseXml = '" + adapter.getResponseXml() + "', responseStatus = '" + adapter.getResponseStatus() + "', dateCall = '" + new java.util.Date() + "'" +
-                        "WHERE numReq = '" + adapter.getNumReq() + "' and id210fz = '" + adapter.getId210fz() + "';";
-            statement.executeUpdate(query);
-            statement.close();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        String query = "UPDATE adapter SET responseXml = '" + adapter.getResponseXml() + "', " +
+                    "responseStatus = '" + adapter.getResponseStatus() + "', dateCall = '" + new java.util.Date() + "'" +
+                    "WHERE numReq = '" + adapter.getNumReq() + "' and id210fz = '" + adapter.getId210fz() + "';";
+        executeUpdate(query);
     }
 
     public static void saveResponseById(Adapter adapter) {
-        try {
-            statement = connection.createStatement();
-            String query = "UPDATE adapter SET responseXml = '" + adapter.getResponseXml() + "', responseStatus = '" + adapter.getResponseStatus() + "', dateCall = '" + new java.util.Date() + "'" +
-                            "WHERE id = '" + adapter.getId() + "';";
-            statement.executeUpdate(query);
-            statement.close();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        String query = "UPDATE adapter SET responseXml = '" + adapter.getResponseXml() + "', " +
+                        "responseStatus = '" + adapter.getResponseStatus() + "', dateCall = '" + new java.util.Date() + "'" +
+                        "WHERE id = '" + adapter.getId() + "';";
+        executeUpdate(query);
     }
 
-    public static List<Adapter> findReqReadyToSend() {
+    public static List<Adapter> findReqReadyToSend(int count) {
         List<Adapter> adapterList = new ArrayList<>();
-        try {
-            statement = connection.createStatement();
-            String query = "SELECT ID, numReq, requestXml, id210fz, smevAddress, adapterName FROM adapter " +
-                    "NATURAL JOIN adapterDetails WHERE responseStatus NOT LIKE 'ACCEPT';";
-            ResultSet resultSet = statement.executeQuery(query);
-            Adapter adapter;
-            while (resultSet.next()) {
-                adapter = new Adapter();
-                adapter.setId(resultSet.getInt("ID"));
-                adapter.setNumReq(resultSet.getInt("numReq"));
-                adapter.setId210fz(resultSet.getString("id210fz"));
-                adapter.setRequestXml(resultSet.getString("requestXml"));
-                AdapterDetails adapterDetails = new AdapterDetails();
-                adapterDetails.setSmevAddress(resultSet.getString("smevAddress"));
-                adapterDetails.setAdapterName(resultSet.getString("adapterName"));
-                adapter.setAdapterDetails(adapterDetails);
-                adapterList.add(adapter);
-            }
-            statement.close();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        String query = adapter_query + " WHERE responseStatus NOT LIKE 'ACCEPT' limit "+ count +";";
+        getAdapter(adapterList, query);
         return adapterList;
     }
 
+    private static void buildAdapter(List<Adapter> adapterList, ResultSet resultSet) throws SQLException {
+        Adapter adapter = new Adapter();
+        adapter.setId(resultSet.getInt("ID"));
+        adapter.setNumReq(resultSet.getInt("numReq"));
+        adapter.setId210fz(resultSet.getString("id210fz"));
+        adapter.setRequestXml(resultSet.getString("requestXml"));
+        AdapterDetails adapterDetails = new AdapterDetails();
+        adapterDetails.setSmevAddress(resultSet.getString("smevAddress"));
+        adapterDetails.setAdapterName(resultSet.getString("adapterName"));
+        adapter.setResponseStatus(resultSet.getString("responseStatus"));
+        adapter.setAdapterDetails(adapterDetails);
+        adapterList.add(adapter);
+    }
+
     public static void saveSettings() {
-        try {
-            statement = connection.createStatement();
-            String query = "UPDATE settings SET key_alias='" + SettingsController.keyAlias.getText() + "', key_alias='" + SettingsController.certAlias.getText() + "', password ='" + SettingsController.password.getText() + "';";
-            statement.executeUpdate(query);
-            statement.close();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        String query = "UPDATE settings SET key_alias='" + SettingsController.keyAlias.getText() + "', " +
+                "key_alias='" + SettingsController.certAlias.getText() + "', " +
+                "password ='" + SettingsController.password.getText() + "';";
+        executeUpdate(query);
     }
 
     public static void saveAddressService(String address, String id210fz) {
-        try {
-            statement = connection.createStatement();
-            String query = "UPDATE adapterDetails SET  smevAddress ='" + address + "' WHERE id210fz in ('" + id210fz + "','" + id210fz + "_2');";
-            statement.executeUpdate(query);
-            statement.close();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        String query = "UPDATE adapterDetails SET  smevAddress ='" + address + "' WHERE id210fz in ('" + id210fz + "','" + id210fz + "_2');";
+        executeUpdate(query);
     }
 
     public static List<AdapterDetails> getAdapterDetails() {
         List<AdapterDetails> listAdapterDetails = new ArrayList<>();
-        try {
-            statement = connection.createStatement();
             String query = "SELECT smevAddress FROM adapterDetails";
-            ResultSet resultSet = statement.executeQuery(query);
+            ResultSet resultSet = executeQuery(query);
             AdapterDetails adapterDetails;
+        try {
             while (resultSet.next()) {
                 adapterDetails = new AdapterDetails();
                 adapterDetails.setSmevAddress(resultSet.getString(1));
             }
-            statement.close();
         } catch (SQLException e) {
-            System.out.println("Ошибка при сохранение служебных полей " + e.getMessage());
+            e.printStackTrace();
         }
         return listAdapterDetails;
+    }
+
+    public static List<Adapter> getResponseStatus(List<Adapter> adapters) {
+        List<Adapter> adapterList = new ArrayList<>();
+        String in = "";
+        for (Adapter adapter: adapters){
+            in = in + adapter.getId() + ",";
+        }
+        in = in.substring(0, in.length()-1);
+        String query = adapter_query + " WHERE ID in ("+ in +");";
+        getAdapter(adapterList, query);
+        return adapterList;
+    }
+
+    public static void getAdapter(List<Adapter> adapterList, String query) {
+        try {
+            statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                buildAdapter(adapterList, resultSet);
+            }
+            statement.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static ResultSet executeQuery(String query) {
+        ResultSet resultSet = null;
+        try {
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery(query);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return resultSet;
+    }
+
+    public static void executeUpdate(String query) {
+        try {
+            statement = connection.createStatement();
+            statement.executeUpdate(query);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

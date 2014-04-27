@@ -42,7 +42,7 @@ public class MainController extends VBox implements Initializable {
     @FXML
     public Button sendRequests;
     @FXML
-    public TextField filePath;
+    public static TextField filePath;
 
     @FXML
     public Label countPFRRequests;
@@ -103,7 +103,6 @@ public class MainController extends VBox implements Initializable {
     private int sendFNSReq(String id210fz) throws Exception {
         int i = 0;
         List<Adapter> adapters = DatabaseUtil.getRequest(id210fz);
-        List<String> listStatus = new ArrayList<>();
         for(Adapter adapter: adapters) {
             i++;
             String responseXml = SendDataService.sendDataToSMEV(adapter.getRequestXml(), addressFNS.getText());
@@ -112,9 +111,8 @@ public class MainController extends VBox implements Initializable {
             adapter.setResponseStatus(respStatus);
             adapter.setId210fz(id210fz);
             DatabaseUtil.saveResponse(adapter);
-            listStatus.add(respStatus);
         }
-        ReadExcelFile.writeFNSStatus(listStatus, id210fz, filePath.getText());
+        ReadExcelFile.writeFNSStatus(adapters, filePath.getText());
         return i;
     }
 
@@ -123,19 +121,17 @@ public class MainController extends VBox implements Initializable {
     @FXML
     public void handleSubmitLoadData(ActionEvent event){
         if (filePath != null && !filePath.getText().isEmpty()) {
-            HashMap<String, List<FNS>> mapFns = null;
+            List<FNS> fnsList = null;
             try {
-                mapFns = ReadExcelFile.readFNSData(filePath.getText());
+                fnsList = ReadExcelFile.readFNSData(filePath.getText());
             } catch (IOException e) {
                 ErrorController.showDialog("Невозможно прочитать файл");
             }
-            if (mapFns != null) {
-                List<String> requestsIp = BuilderRequest.buildRequestByTemplate(mapFns.get(Register.FNS.adapter));
-                List<String> requestsUl = BuilderRequest.buildRequestByTemplate(mapFns.get(Register.FNS.adapterUL));
-                DatabaseUtil.insertRequests(requestsIp, requestsUl);
+            if (fnsList != null) {
+                List<Adapter> adapterFns = BuilderRequest.buildRequestByTemplate(fnsList);
+                DatabaseUtil.insertRequests(adapterFns);
 
-                int countFnsReq = requestsIp.size() + requestsUl.size();
-                countFNSRequests.setText(String.valueOf(countFnsReq));
+                countFNSRequests.setText(String.valueOf(adapterFns.size()));
                 countFNSSentReq.setText("0");
             }
         }
@@ -156,8 +152,10 @@ public class MainController extends VBox implements Initializable {
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XLS", "*.xls"));
         File file = fileChooser.showOpenDialog(Main.mainStage);
         try {
-            DatabaseUtil.savePathFile(file.getCanonicalPath());
-            filePath.setText(file.getCanonicalPath());
+            if (file != null) {
+                DatabaseUtil.savePathFile(file.getCanonicalPath());
+                filePath.setText(file.getCanonicalPath());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
