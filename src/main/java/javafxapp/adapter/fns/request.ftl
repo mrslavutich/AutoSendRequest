@@ -10,12 +10,12 @@
                     <smev:Name>${SenderName}</smev:Name>
                 </smev:Sender>
                 <smev:Recipient>
-                    <smev:Code>${RecipientCode}</smev:Code>
-                    <smev:Name>${RecipientName}</smev:Name>
+                    <smev:Code>FNS001001</smev:Code>
+                    <smev:Name>ФНС России</smev:Name>
                 </smev:Recipient>
                 <smev:Originator>
-                    <smev:Code>${OriginatorCode}</smev:Code>
-                    <smev:Name>${OriginatorName}</smev:Name>
+                    <smev:Code>${SenderCode}</smev:Code>
+                    <smev:Name>${SenderName}</smev:Name>
                 </smev:Originator>
                 <smev:TypeCode>${TypeCode}</smev:TypeCode>
                 <smev:Status>${StatusRequest}</smev:Status>

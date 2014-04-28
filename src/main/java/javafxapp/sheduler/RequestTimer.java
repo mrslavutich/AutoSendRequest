@@ -1,6 +1,8 @@
 package javafxapp.sheduler;
 
 import javafxapp.adapter.domain.Adapter;
+import javafxapp.controller.MainController;
+import javafxapp.controller.SettingsController;
 import javafxapp.db.DatabaseUtil;
 import javafxapp.service.SendDataService;
 import javafxapp.utils.XMLParser;
@@ -114,6 +116,7 @@ public class RequestTimer extends Thread implements IRequestTimer {
                         DatabaseUtil.saveResponseById(adapter);
                         if (respStatus.equals("ACCEPT")) {
                             TimerCache.getInstance().deleteRequest(key);
+                            MainController.counter(timerRequests.getFoiv());
                         }
                         this.sleep(time * 1000);
                     }
@@ -123,6 +126,7 @@ public class RequestTimer extends Thread implements IRequestTimer {
 
             }
         }else {
+            SettingsController.writeStatusInExcelFromDB();
             stopRequest();
         }
     }

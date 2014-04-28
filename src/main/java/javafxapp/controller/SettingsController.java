@@ -17,7 +17,6 @@ import javafxapp.elements.TimeTextField;
 import javafxapp.handleFault.FaultsUtils;
 import javafxapp.sheduler.RequestTimer;
 import javafxapp.sheduler.TimerCache;
-import javafxapp.utils.ReadExcelFile;
 
 import java.net.URL;
 import java.text.ParseException;
@@ -59,7 +58,7 @@ public class SettingsController extends Pane implements Initializable{
 
     RequestTimer requestTimer;
 
-    List<Adapter> adapters;
+    public static List<Adapter> adapters;
 
     @FXML
     public void saveSettings(ActionEvent event) throws ParseException {
@@ -86,10 +85,7 @@ public class SettingsController extends Pane implements Initializable{
             requestTimer.startRequest(idDays.getText(), idHours.getText(), idMinutes.getText(), idSeconds.getText(),
                                         startWork, endWork);
         } else {
-            if (adapters != null && adapters.size() > 0) {
-                List<Adapter> adapterList = DatabaseUtil.getResponseStatus(adapters);
-                ReadExcelFile.writeFNSStatus(adapterList, MainController.filePath.getText());
-            }
+            writeStatusInExcelFromDB();
             requestTimer.stopRequest();
         }
         try {
@@ -102,6 +98,14 @@ public class SettingsController extends Pane implements Initializable{
             }else ErrorController.showDialog("Заполните все поля по данным для сертификата");
         } catch (Exception e) {
             ErrorController.showDialog(FaultsUtils.modifyMessage(e.getMessage()));
+        }
+    }
+
+    public static void writeStatusInExcelFromDB() {
+        if (adapters != null && adapters.size() > 0) {
+            List<Adapter> adapterList = DatabaseUtil.getResponseStatus(adapters);
+            /*ReadExcelFile.writeFNSStatus(adapterList, MainController.filePath.getText());*/
+            adapters = null;
         }
     }
 

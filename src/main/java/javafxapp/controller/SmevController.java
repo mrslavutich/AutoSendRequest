@@ -60,12 +60,10 @@ public class SmevController extends Accordion {
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put("senderCodeFNS", senderCodeFNS.getText());
         hashMap.put("senderNameFNS", senderNameFNS.getText());
-        hashMap.put("recipientCodeFNS", recipientCodeFNS.getText());
-        hashMap.put("recipientNameFNS", recipientNameFNS.getText());
-        hashMap.put("originatorCodeFNS", originatorCodeFNS.getText());
-        hashMap.put("originatorNameFNS", originatorNameFNS.getText());
+        hashMap.put("senderCodeMVD", senderCodeMVD.getText());
+        hashMap.put("senderNameMVD", senderNameMVD.getText());
 
-        DatabaseUtil.saveSmevFields(Register.FNS.foiv, hashMap);
+        DatabaseUtil.saveSmevFields(hashMap);
 
     }
 

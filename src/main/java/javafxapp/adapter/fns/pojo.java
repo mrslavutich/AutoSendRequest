@@ -5,7 +5,7 @@ import javafxapp.adapter.SmevFields;
 
 import java.util.UUID;
 
-public class FNS extends SmevFields {
+public class Pojo extends SmevFields {
     public String ogrn;
     public String inn;
     public String idDoc;

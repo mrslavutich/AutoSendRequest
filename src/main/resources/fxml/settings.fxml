@@ -26,7 +26,7 @@
             <TimeTextField fx:id="endTime" alignment="BASELINE_CENTER" layoutX="248.0" layoutY="128.0" prefHeight="22.0" prefWidth="48.0" />
             <Label layoutX="226.0" layoutY="132.0" text="по" />
             <Label layoutX="138.0" layoutY="132.0" text="с" />
-            <NumberTextField fx:id="countReqField" layoutX="424.0"  layoutY="169.0" prefHeight="22.0" prefWidth="37.0" />
+            <NumberTextField fx:id="countReqField" layoutX="430.0"  layoutY="169.0" prefHeight="22.0" prefWidth="37.0" />
             <CheckBox fx:id="checkBoxCountReq" layoutX="81.0" layoutY="172.0" mnemonicParsing="false" text="Указать количество отправляемых запросов за сеанс работы:" />
             <Button fx:id="idSaveSettings" onAction="#saveSettings" layoutX="506.459228515625" layoutY="353.0" mnemonicParsing="false" text="Сохранить" />
             <Label layoutX="167.0" layoutY="252.0" text="Название" />

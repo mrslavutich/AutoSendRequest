@@ -1,5 +1,6 @@
 package javafxapp.controller;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,10 +16,11 @@ import javafxapp.adapter.Register;
 import javafxapp.adapter.domain.Adapter;
 import javafxapp.adapter.domain.AdapterDetails;
 import javafxapp.adapter.domain.Settings;
-import javafxapp.adapter.fns.FNS;
+import javafxapp.adapter.fns.Pojo;
 import javafxapp.db.DatabaseUtil;
 import javafxapp.handleFault.FaultsUtils;
 import javafxapp.service.SendDataService;
+import javafxapp.utils.AdapterCells;
 import javafxapp.utils.ReadExcelFile;
 import javafxapp.utils.XMLParser;
 
@@ -45,18 +47,18 @@ public class MainController extends VBox implements Initializable {
     public static TextField filePath;
 
     @FXML
-    public Label countPFRRequests;
+    public static Label countPFRRequests;
     @FXML
-    public Label countFNSRequests;
+    public static Label countFNSRequests;
     @FXML
-    public Label countMVDRequests;
+    public static Label countMVDRequests;
 
     @FXML
-    public Label countPFRSentReq;
+    public static Label countPFRSentRequests;
     @FXML
-    public Label countFNSSentReq;
+    public static Label countFNSSentRequests;
     @FXML
-    public Label countMVDSentReq;
+    public static Label countMVDSentRequests;
 
     @FXML
     public CheckBox checkboxPFR;
@@ -80,11 +82,19 @@ public class MainController extends VBox implements Initializable {
                 ErrorController.showDialog("Укажите адрес сервиса ФНС");
             }else {
                 checkAccessService(addressFNS.getText(), Register.FNS.foiv);
-                int countSentReqIp = sendFNSReq("07");
-                int countSentReqUl = sendFNSReq("07_2");
-                countFNSSentReq.setText(String.valueOf(countSentReqIp + countSentReqUl));
-                countFNSRequests.setText("0");
+                sendReq("07", addressFNS.getText(), Register.FNS.foiv, AdapterCells.Fns.status);
+                sendReq("07_2", addressFNS.getText(), Register.FNS.foiv, AdapterCells.Fns.status);
                 DatabaseUtil.saveAddressService(addressFNS.getText(), "07");
+                DatabaseUtil.saveAddressService(addressFNS.getText(), "07_2");
+            }
+        }
+        if (checkboxMVD.isSelected()) {
+            if (addressMVD.getText() == null || addressMVD.getText().isEmpty()){
+                ErrorController.showDialog("Укажите адрес сервиса МВД");
+            }else {
+                checkAccessService(addressMVD.getText(), Register.MVD.foiv);
+                sendReq("410", addressMVD.getText(), Register.MVD.foiv, AdapterCells.Mvd.status);
+                DatabaseUtil.saveAddressService(addressMVD.getText(), "410");
             }
         }
 
@@ -100,20 +110,39 @@ public class MainController extends VBox implements Initializable {
         }
     }
 
-    private int sendFNSReq(String id210fz) throws Exception {
-        int i = 0;
+    public static void counter(final String foiv) throws MalformedURLException {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+
+                if (foiv.equals(Register.FNS.foiv)) {
+                    countFNSRequests.setText(String.valueOf((Integer.parseInt(countFNSRequests.getText()) - 1)));
+                    countFNSSentRequests.setText(String.valueOf((Integer.parseInt(countFNSSentRequests.getText()) + 1)));
+                }else if (foiv.equals(Register.MVD.foiv)) {
+                    countMVDRequests.setText(String.valueOf((Integer.parseInt(countMVDRequests.getText()) - 1)));
+                    countMVDSentRequests.setText(String.valueOf((Integer.parseInt(countMVDSentRequests.getText()) + 1)));
+                }else if (foiv.equals(Register.PFR.foiv)) {
+                    countPFRRequests.setText(String.valueOf((Integer.parseInt(countPFRRequests.getText()) - 1)));
+                    countPFRSentRequests.setText(String.valueOf((Integer.parseInt(countPFRSentRequests.getText()) + 1)));
+                }
+            }
+        });
+    }
+
+    private void sendReq(String id210fz, String address, String sheetName, int positionStatus) throws Exception {
         List<Adapter> adapters = DatabaseUtil.getRequest(id210fz);
         for(Adapter adapter: adapters) {
-            i++;
-            String responseXml = SendDataService.sendDataToSMEV(adapter.getRequestXml(), addressFNS.getText());
+            String responseXml = SendDataService.sendDataToSMEV(adapter.getRequestXml(), address);
             String respStatus = XMLParser.getResponseStatus(responseXml);
+            if (respStatus.equals("ACCEPT")){
+                counter(sheetName);
+            }
             adapter.setResponseXml(responseXml);
             adapter.setResponseStatus(respStatus);
             adapter.setId210fz(id210fz);
             DatabaseUtil.saveResponse(adapter);
         }
-        ReadExcelFile.writeFNSStatus(adapters, filePath.getText());
-        return i;
+        ReadExcelFile.writeFNSStatus(adapters, filePath.getText(), sheetName, positionStatus);
     }
 
 
@@ -121,19 +150,32 @@ public class MainController extends VBox implements Initializable {
     @FXML
     public void handleSubmitLoadData(ActionEvent event){
         if (filePath != null && !filePath.getText().isEmpty()) {
-            List<FNS> fnsList = null;
+            List<Pojo> fnsList = null;
+            List<javafxapp.adapter.mvd.Pojo> mvdList = null;
             try {
                 fnsList = ReadExcelFile.readFNSData(filePath.getText());
+                mvdList = ReadExcelFile.readMVDData(filePath.getText());
             } catch (IOException e) {
                 ErrorController.showDialog("Невозможно прочитать файл");
             }
+            List<Adapter> adapterFns = null, adapterMvd = null;
+            List<Adapter> allAdapters = new ArrayList<>();
             if (fnsList != null) {
-                List<Adapter> adapterFns = BuilderRequest.buildRequestByTemplate(fnsList);
-                DatabaseUtil.insertRequests(adapterFns);
+                adapterFns = BuilderRequest.buildRequestByTemplateFns(fnsList, "fns");
 
                 countFNSRequests.setText(String.valueOf(adapterFns.size()));
-                countFNSSentReq.setText("0");
+                countFNSSentRequests.setText("0");
             }
+            if (mvdList != null) {
+                adapterMvd = BuilderRequest.buildRequestByTemplateMvd(mvdList, "mvd");
+
+                countMVDRequests.setText(String.valueOf(adapterMvd.size()));
+                countMVDSentRequests.setText("0");
+            }
+            if (adapterFns != null)  allAdapters.addAll(adapterFns);
+            if (adapterMvd != null)  allAdapters.addAll(adapterMvd);
+            if (allAdapters.size() > 0) DatabaseUtil.insertRequests(allAdapters);
+
         }
     }
 
@@ -165,14 +207,12 @@ public class MainController extends VBox implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         DatabaseUtil.createDB();
-        HashMap<String, String> smevFileds = DatabaseUtil.getSmevFields(Register.FNS.foiv);
+        HashMap<String, String> smevFileds = DatabaseUtil.getSmevFields();
         for(Map.Entry<String, String> entry : smevFileds.entrySet()) {
             if (entry.getKey().equals(SmevController.senderCodeFNS.getId())) SmevController.senderCodeFNS.setText(entry.getValue());
             if (entry.getKey().equals(SmevController.senderNameFNS.getId())) SmevController.senderNameFNS.setText(entry.getValue());
-            if (entry.getKey().equals(SmevController.recipientCodeFNS.getId())) SmevController.recipientCodeFNS.setText(entry.getValue());
-            if (entry.getKey().equals(SmevController.recipientNameFNS.getId())) SmevController.recipientNameFNS.setText(entry.getValue());
-            if (entry.getKey().equals(SmevController.originatorCodeFNS.getId())) SmevController.originatorCodeFNS.setText(entry.getValue());
-            if (entry.getKey().equals(SmevController.originatorNameFNS.getId())) SmevController.originatorNameFNS.setText(entry.getValue());
+            if (entry.getKey().equals(SmevController.senderCodeMVD.getId())) SmevController.senderCodeMVD.setText(entry.getValue());
+            if (entry.getKey().equals(SmevController.senderNameMVD.getId())) SmevController.senderNameMVD.setText(entry.getValue());
         }
         Settings settings = DatabaseUtil.getSettings();
 
@@ -183,9 +223,8 @@ public class MainController extends VBox implements Initializable {
 
         List<AdapterDetails> adapterDetailsList = DatabaseUtil.getAdapterDetails();
         for (AdapterDetails adapterDetails: adapterDetailsList){
-            addressFNS.setText(adapterDetails.getSmevAddress());
-            addressMVD.setText(adapterDetails.getSmevAddress());
-            addressPFR.setText(adapterDetails.getSmevAddress());
+             if (adapterDetails.getFoiv().equals(Register.FNS.foiv)) addressFNS.setText(adapterDetails.getSmevAddress());
+            if (adapterDetails.getFoiv().equals(Register.MVD.foiv)) addressMVD.setText(adapterDetails.getSmevAddress());
         }
 
 

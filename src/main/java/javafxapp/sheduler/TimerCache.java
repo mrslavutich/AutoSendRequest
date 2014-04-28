@@ -24,6 +24,7 @@ public class TimerCache {
         timerRequests.setRequestXml(adapter.getRequestXml());
         timerRequests.setSmevAddress(adapter.getAdapterDetails().getSmevAddress());
         timerRequests.setAdapterId(adapter.getId210fz());
+        timerRequests.setFoiv(adapter.getAdapterDetails().getFoiv());
         requestsToSend.put(String.valueOf(adapter.getId()), timerRequests);
 
     }
