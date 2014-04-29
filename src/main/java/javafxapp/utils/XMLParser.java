@@ -17,16 +17,31 @@ public class XMLParser {
     private static final String soap_envelope = "http://schemas.xmlsoap.org/soap/envelope/";
     private static final String FAULTSTRING = "faultstring";
     private static final String STATUS = "Status";
+    private static final String DOCUMENT_FNS = "Документ";
+    private static final String ERROR_FNS = "Ошибка";
 
     public static String getResponseStatus(String responseXml) throws Exception {
         String responseStatus = FaultsUtils.findFaultsInResponseXML(responseXml);
         if (responseStatus == null){
             responseStatus = getStatusElement(responseXml);
+            String errorFns = findErrorInDocument(responseXml);
+            if (errorFns != null && !errorFns.isEmpty()) {
+                responseStatus += "[" + XMLParser.replacer(errorFns) + "]";
+            }
         }
         if (responseStatus == null){
             responseStatus = "Ошибка";
         }
         return responseStatus;
+    }
+
+    private static String findErrorInDocument(String xml) {
+        Document doc = parseDocFromByte(xml.getBytes());
+        Element elem = getDocElement(doc, DOCUMENT_FNS);
+        if (elem != null) {
+            return elem.getAttribute(ERROR_FNS);
+        }
+        return null;
     }
 
     private static String getStatusElement(String xml) throws Exception {
@@ -93,5 +108,9 @@ public class XMLParser {
         if (nodeList != null)
             el = (Element) nodeList.item(0);
         return el;
+    }
+
+    public static String replacer(String xml){
+        return xml.replaceAll("\'","&");
     }
 }

@@ -6,8 +6,11 @@ package javafxapp.utils;
 public class AdapterCells {
 
     public static class Fns {
-        public static final int status = 2;
-        public static final int enterData = 1;
+        public static final int status_short = 3;
+        public static final int status_full = 4;
+        public static final int typeDoc = 1;
+        public static final int valueDoc = 2;
+        public static final int nomerDela = 3;
     }
 
     public static class Mvd {

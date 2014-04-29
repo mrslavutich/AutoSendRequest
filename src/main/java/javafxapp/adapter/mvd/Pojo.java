@@ -4,6 +4,8 @@ import javafxapp.adapter.SmevFields;
 
 public class Pojo extends SmevFields {
 
+    private String id210fz;
+
     public String typeRequest; //Сведения о наличии (отсутствии) судимости и (или) факта уголовного преследования либо о прекращении уголовного преследования, сведения о нахождении в розыске
     public String reason; //12345678901
 
@@ -158,5 +160,13 @@ public class Pojo extends SmevFields {
 
     public void setRowNum(int rowNum) {
         this.rowNum = rowNum;
+    }
+
+    public String getId210fz() {
+        return id210fz;
+    }
+
+    public void setId210fz(String id210fz) {
+        this.id210fz = id210fz;
     }
 }

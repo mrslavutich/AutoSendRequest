@@ -4,6 +4,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafxapp.controller.MainController?>
+<?import javafxapp.elements.NumberTextField?>
+<?import javafxapp.elements.TimeTextField?>
+<?import javafxapp.elements.IntervalTimeTextField?>
 <MainController maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="425.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafxapp.controller.MainController" >
     <fx:define>
         <fx:include source="smevfields.fxml" fx:id="smevfields" />
@@ -14,35 +17,45 @@
   <tabs>
     <Tab text="Отправка запросов">
       <content>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-          <children>
-              <Label layoutX="30.0" layoutY="28.0" prefHeight="55.0" prefWidth="310.0" text="ПФР(Сведения о страховом номере индивидуального лицевого счета (СНИЛС по данным)) " textAlignment="CENTER" wrapText="true" />
-              <TextField fx:id="addressPFR" alignment="TOP_CENTER" layoutX="25.0" layoutY="72.0" prefHeight="22.0" prefWidth="310.0" promptText="Введите адрес сервиса" />
-              <TextField fx:id="addressFNS" alignment="TOP_CENTER" layoutX="25.0" layoutY="153.0" prefHeight="22.0" prefWidth="310.0" promptText="Введите адрес сервиса" text="" />
-              <Label alignment="BASELINE_RIGHT" contentDisplay="RIGHT" layoutX="92.0" layoutY="131.0" prefHeight="22.0" prefWidth="186.0" text="ФНС(сведения из ЕГРИП/ЕГРЮЛ)" textAlignment="CENTER" wrapText="true" />
-              <Label alignment="BASELINE_RIGHT" contentDisplay="RIGHT" layoutX="112.0" layoutY="209.0" prefHeight="22.0" prefWidth="156.0" text="МВД(сведения о судимости) " textAlignment="CENTER" wrapText="true" />
-              <Button fx:id="sendRequests" layoutX="419.0" layoutY="358.0" mnemonicParsing="false" onAction="#handleSubmitSendRequests" text="Отправить запросы" />
-              <TextField fx:id="addressMVD" alignment="TOP_CENTER" layoutX="25.0" layoutY="231.0" prefHeight="22.0" prefWidth="310.0" promptText="Введите адрес сервиса" />
-              <CheckBox fx:id="checkboxPFR" layoutX="365.0" layoutY="64.0" mnemonicParsing="false" />
-              <CheckBox fx:id="checkboxMVD" layoutX="365.0" layoutY="217.0" mnemonicParsing="false" />
-              <CheckBox fx:id="checkboxFNS" layoutX="365.0" layoutY="140.0" mnemonicParsing="false" />
-              <Label layoutX="408.0" layoutY="55.0" text="готово к отправке: " />
-              <Label layoutX="408.0" layoutY="211.0" text="готово к отправке:" />
-              <Label layoutX="408.0" layoutY="135.0" text="готово к отправке:" />
-              <Label layoutX="408.0" layoutY="76.0" text="успешно отправлено:" />
-              <Label layoutX="408.0" layoutY="237.0" text="успешно отправлено:" />
-              <Label layoutX="408.0" layoutY="159.0" text="успешно отправлено:" />
-              <Button layoutX="311.0" layoutY="303.0" mnemonicParsing="false" onAction="#handleFileChooser" text="Выберите файл" />
-              <Button fx:id="idLoadData" layoutX="423.0" layoutY="303.0" mnemonicParsing="false" onAction="#handleSubmitLoadData" text="Сформировать запросы" />
-              <TextField fx:id="filePath" layoutX="29.0" layoutY="303.0" onAction="#handleFileChooser" prefHeight="22.0" prefWidth="269.0" promptText="Укажите путь к файлу" text="" />
-              <Label fx:id="countPFRRequests" layoutX="525.0" layoutY="56.0" text="0 " />
-              <Label fx:id="countPFRSentRequests" layoutX="525.0" layoutY="76.0" text="0" />
-              <Label fx:id="countFNSRequests" layoutX="525.0" layoutY="135.0" text="0" />
-              <Label fx:id="countFNSSentRequests" layoutX="525.0" layoutY="159.0" text="0" />
-              <Label fx:id="countMVDRequests" layoutX="525.0" layoutY="213.0" text="0" />
-              <Label fx:id="countMVDSentRequests" layoutX="525.0" layoutY="238.0" text="0" />
-          </children>
-        </AnchorPane>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="500.0" prefWidth="600.0">
+                  <children>
+                      <TextField fx:id="filePath" layoutX="54.0" layoutY="31.0" onAction="#handleFileChooser" prefHeight="22.0" prefWidth="269.0" promptText="Укажите путь к файлу" text="" />
+                      <Button fx:id="idLoadData" layoutX="223.0" layoutY="65.0" mnemonicParsing="false" onAction="#handleSubmitLoadData" text="Сформировать запросы" />
+                      <Button layoutX="340.0" layoutY="31.0" mnemonicParsing="false" onAction="#handleFileChooser" text="Выберите файл" />
+
+                      <Label layoutX="56.0" layoutY="104.0" text="Укажите период времени отправки запросов:" />
+                      <Label layoutX="143.0" layoutY="134.0" text="дни" />
+                      <Label layoutX="211.0" layoutY="134.0" text="часы" />
+                      <Label layoutX="369.0" layoutY="134.0" text="секунды" />
+                      <IntervalTimeTextField fx:id="idMinutes" alignment="BASELINE_CENTER" layoutX="246.0" layoutY="130.0" prefHeight="22.0" prefWidth="31.0" />
+                      <Label layoutX="283.0" layoutY="134.0" text="минуты" />
+                      <IntervalTimeTextField fx:id="idSeconds" alignment="BASELINE_CENTER" layoutX="332.0" layoutY="130.0" prefHeight="22.0" prefWidth="31.0" />
+                      <IntervalTimeTextField fx:id="idHours" alignment="BASELINE_CENTER" layoutX="174.0" layoutY="130.0" prefHeight="22.0" prefWidth="31.0" />
+                      <IntervalTimeTextField fx:id="idDays" alignment="BASELINE_CENTER" layoutX="106.0" layoutY="130.0" prefHeight="22.0" prefWidth="31.0" />
+
+                      <CheckBox fx:id="timeWork" layoutX="54.0" layoutY="169.0" mnemonicParsing="false" text="Установить время работы автоматической отправки запросов:" />
+                      <TimeTextField fx:id="startTime" alignment="BASELINE_CENTER" layoutX="128.0" layoutY="200.0" prefHeight="22.0" prefWidth="48.0" />
+                      <TimeTextField fx:id="endTime" alignment="BASELINE_CENTER" layoutX="220.0" layoutY="200.0" prefHeight="22.0" prefWidth="48.0" />
+                      <Label layoutX="198.0" layoutY="204.0" text="по" />
+                      <Label layoutX="110.0" layoutY="204.0" text="с" />
+                      <NumberTextField fx:id="countReqField" layoutX="402.0" layoutY="241.0" prefHeight="22.0" prefWidth="37.0" />
+                      <CheckBox fx:id="checkBoxCountReq" layoutX="53.0" layoutY="244.0" mnemonicParsing="false" text="Указать количество отправляемых запросов за сеанс работы:" />
+                      <CheckBox fx:id="checkboxMVD" layoutX="270.0" layoutY="362.0" mnemonicParsing="false" />
+                      <CheckBox fx:id="checkboxFNS" layoutX="270.0" layoutY="310.0" mnemonicParsing="false" />
+                      <Label layoutX="313.0" layoutY="351.0" text="готово к отправке:" />
+                      <Label layoutX="313.0" layoutY="300.0" text="готово к отправке:" />
+                      <Label layoutX="313.0" layoutY="377.0" text="успешно отправлено:" />
+                      <Label layoutX="313.0" layoutY="324.0" text="успешно отправлено:" />
+                      <Label fx:id="countFNSRequests" layoutX="430.0" layoutY="300.0" text="0" />
+                      <Label fx:id="countFNSSentRequests" layoutX="430.0" layoutY="324.0" text="0" />
+                      <Label fx:id="countMVDRequests" layoutX="430.0" layoutY="353.0" text="0" />
+                      <Label fx:id="countMVDSentRequests" layoutX="430.0" layoutY="378.0" text="0" />
+                      <Label layoutX="87.0" layoutY="311.0" text="ФНС(Сведения из ЕГРИП\ЕГРЮЛ))" />
+                      <Label layoutX="103.0" layoutY="358.0" text="МВД(сведения о судимости)" />
+
+                      <Button fx:id="sendRequests" layoutX="373.0" layoutY="413.0" mnemonicParsing="false" onAction="#handleSubmitSendRequests" text="Включить отправку запросов" />
+                  </children>
+              </AnchorPane>
       </content>
     </Tab>
       <Tab text="Служебные поля" content="$smevfields"/>

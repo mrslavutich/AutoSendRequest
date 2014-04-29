@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafxapp.controller.SmevController?>
+<Accordion id="smevfields" xmlns:fx="http://javafx.com/fxml" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" fx:controller="javafxapp.controller.SmevController" >
+    <panes>
+        <TitledPane text="ФНС(Сведения из ЕГРИП\ЕГРЮЛ)">
+            <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="212.0" prefWidth="600.0">
+                    <children>
+                        <Label layoutX="77.0" layoutY="41.0" prefHeight="17.0" prefWidth="332.0" text="Данные о системе-инициаторе взаимодействия (Потребителе):" textAlignment="CENTER" wrapText="true" />
+                        <TextField fx:id="senderCodeFNS" layoutX="138.0" layoutY="65.0" prefHeight="22.0" prefWidth="92.0" />
+                        <Label layoutX="77.0" layoutY="105.0" prefHeight="17.0" prefWidth="319.0" text="Данные о системе-получателе сообщения (Поставщике):" textAlignment="CENTER" wrapText="true" />
+                        <Label layoutX="77.0" layoutY="175.0" prefHeight="30.0" prefWidth="403.0" text="Данные о системе, инициировавшей цепочку из нескольких запросов-ответов, объединенных единым процессом в рамках взаимодействия:" wrapText="true" />
+                        <Label layoutX="100.0" layoutY="69.0" text="Код" />
+                        <Label layoutX="269.0" layoutY="69.0" text="Наименование" />
+                        <TextField fx:id="senderNameFNS" layoutX="365.0" layoutY="65.0" prefHeight="22.0" prefWidth="92.0" />
+                        <TextField fx:id="recipientNameFNS" layoutX="365.0" layoutY="131.0" prefHeight="22.0" prefWidth="92.0" />
+                        <Label layoutX="269.0" layoutY="135.0" text="Наименование" />
+                        <Label layoutX="100.0" layoutY="135.0" text="Код" />
+                        <TextField fx:id="recipientCodeFNS" layoutX="138.0" layoutY="131.0" prefHeight="22.0" prefWidth="92.0" />
+                        <TextField fx:id="originatorCodeFNS" layoutX="138.0" layoutY="214.0" prefHeight="22.0" prefWidth="92.0" />
+                        <Label layoutX="100.0" layoutY="218.0" text="Код" />
+                        <Label layoutX="269.0" layoutY="218.0" text="Наименование" />
+                        <TextField fx:id="originatorNameFNS" layoutX="365.0" layoutY="214.0" prefHeight="22.0" prefWidth="92.0" />
+                        <Button layoutX="254.0" layoutY="283.0" mnemonicParsing="false" text="Сохранить" onAction="#handleSaveSmevFileds"/>
+                    </children>
+                </AnchorPane>
+            </content>
+        </TitledPane>
+        <TitledPane text="ПФР(Сведения о страховом номере индивидуального лицевого счета (СНИЛС по данным))">
+            <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="212.0" prefWidth="600.0">
+                    <children>
+                        <Label layoutX="77.0" layoutY="41.0" prefHeight="17.0" prefWidth="332.0" text="Данные о системе-инициаторе взаимодействия (Потребителе):" textAlignment="CENTER" wrapText="true" />
+                        <TextField fx:id="senderCodePFR" layoutX="138.0" layoutY="65.0" prefHeight="22.0" prefWidth="92.0" />
+                        <Label layoutX="77.0" layoutY="105.0" prefHeight="17.0" prefWidth="319.0" text="Данные о системе-получателе сообщения (Поставщике):" textAlignment="CENTER" wrapText="true" />
+                        <Label layoutX="77.0" layoutY="175.0" prefHeight="30.0" prefWidth="403.0" text="Данные о системе, инициировавшей цепочку из нескольких запросов-ответов, объединенных единым процессом в рамках взаимодействия:" wrapText="true" />
+                        <Label layoutX="100.0" layoutY="69.0" text="Код" />
+                        <Label layoutX="269.0" layoutY="69.0" text="Наименование" />
+                        <TextField fx:id="senderNamePFR" layoutX="365.0" layoutY="65.0" prefHeight="22.0" prefWidth="92.0" />
+                        <TextField fx:id="recipientNamePFR" layoutX="365.0" layoutY="131.0" prefHeight="22.0" prefWidth="92.0" />
+                        <Label layoutX="269.0" layoutY="135.0" text="Наименование" />
+                        <Label layoutX="100.0" layoutY="135.0" text="Код" />
+                        <TextField fx:id="recipientCodePFR" layoutX="138.0" layoutY="131.0" prefHeight="22.0" prefWidth="92.0" />
+                        <TextField fx:id="originatorCodePFR" layoutX="138.0" layoutY="214.0" prefHeight="22.0" prefWidth="92.0" />
+                        <Label layoutX="100.0" layoutY="218.0" text="Код" />
+                        <Label layoutX="269.0" layoutY="218.0" text="Наименование" />
+                        <TextField fx:id="originatorNamePFR" layoutX="365.0" layoutY="214.0" prefHeight="22.0" prefWidth="92.0" />
+                        <Button layoutX="254.0" layoutY="283.0" mnemonicParsing="false" text="Сохранить" onAction="#handleSaveSmevFileds"/>
+                    </children>
+                </AnchorPane>
+            </content>
+        </TitledPane>
+        <TitledPane text="МВД(Сведения о судимости)">
+            <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="212.0" prefWidth="600.0">
+                    <children>
+                        <Label layoutX="77.0" layoutY="41.0" prefHeight="17.0" prefWidth="332.0" text="Данные о системе-инициаторе взаимодействия (Потребителе):" textAlignment="CENTER" wrapText="true" />
+                        <TextField fx:id="senderCodeMVD" layoutX="138.0" layoutY="65.0" prefHeight="22.0" prefWidth="92.0" />
+                        <Label layoutX="77.0" layoutY="105.0" prefHeight="17.0" prefWidth="319.0" text="Данные о системе-получателе сообщения (Поставщике):" textAlignment="CENTER" wrapText="true" />
+                        <Label layoutX="77.0" layoutY="175.0" prefHeight="30.0" prefWidth="403.0" text="Данные о системе, инициировавшей цепочку из нескольких запросов-ответов, объединенных единым процессом в рамках взаимодействия:" wrapText="true" />
+                        <Label layoutX="100.0" layoutY="69.0" text="Код" />
+                        <Label layoutX="269.0" layoutY="69.0" text="Наименование" />
+                        <TextField fx:id="senderNameMVD" layoutX="365.0" layoutY="65.0" prefHeight="22.0" prefWidth="92.0" />
+                        <TextField fx:id="recipientNameMVD" layoutX="365.0" layoutY="131.0" prefHeight="22.0" prefWidth="92.0" />
+                        <Label layoutX="269.0" layoutY="135.0" text="Наименование" />
+                        <Label layoutX="100.0" layoutY="135.0" text="Код" />
+                        <TextField fx:id="recipientCodeMVD" layoutX="138.0" layoutY="131.0" prefHeight="22.0" prefWidth="92.0" />
+                        <TextField fx:id="originatorCodeMVD" layoutX="138.0" layoutY="214.0" prefHeight="22.0" prefWidth="92.0" />
+                        <Label layoutX="100.0" layoutY="218.0" text="Код" />
+                        <Label layoutX="269.0" layoutY="218.0" text="Наименование" />
+                        <TextField fx:id="originatorNameMVD" layoutX="365.0" layoutY="214.0" prefHeight="22.0" prefWidth="92.0" />
+                        <Button layoutX="254.0" layoutY="283.0" mnemonicParsing="false" text="Сохранить" onAction="#handleSaveSmevFileds"/>
+                    </children>
+                </AnchorPane>
+            </content>
+        </TitledPane>
+    </panes>
+</Accordion>
