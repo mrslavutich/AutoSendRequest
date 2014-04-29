@@ -3,11 +3,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafxapp.controller.SmevController?>
-<SmevController id="smevfields" xmlns:fx="http://javafx.com/fxml" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" fx:controller="javafxapp.controller.SmevController" >
+<SmevController id="smevfields" xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="462.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" fx:controller="javafxapp.controller.SmevController" >
   <panes>
     <TitledPane text="ФНС(Сведения из ЕГРИП\ЕГРЮЛ)">
       <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="212.0" prefWidth="600.0">
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
             <children>
                 <Label layoutX="87.0" layoutY="67.0" prefHeight="17.0" prefWidth="332.0" text="Данные о системе-инициаторе взаимодействия (Потребителе):" textAlignment="CENTER" wrapText="true" />
                 <TextField fx:id="senderCodeFNS" layoutX="148.0" layoutY="100.0" prefHeight="22.0" prefWidth="92.0" />
@@ -25,7 +25,7 @@
     </TitledPane>
     <TitledPane text="МВД(Сведения о судимости)">
       <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="212.0" prefWidth="600.0">
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
                   <Label layoutX="87.0" layoutY="67.0" prefHeight="17.0" prefWidth="332.0" text="Данные о системе-инициаторе взаимодействия (Потребителе):" textAlignment="CENTER" wrapText="true" />
                   <TextField fx:id="senderCodeMVD" layoutX="148.0" layoutY="100.0" prefHeight="22.0" prefWidth="92.0" />
