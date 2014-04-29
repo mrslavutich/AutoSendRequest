@@ -7,13 +7,13 @@
 <?import javafxapp.elements.NumberTextField?>
 <?import javafxapp.elements.TimeTextField?>
 <?import javafxapp.elements.IntervalTimeTextField?>
-<MainController maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="425.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafxapp.controller.MainController" >
+<MainController maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="490.0" prefWidth="552.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafxapp.controller.MainController" >
     <fx:define>
         <fx:include source="smevfields.fxml" fx:id="smevfields" />
         <fx:include source="settings.fxml" fx:id="settings" />
    </fx:define>
     <children>
-    <TabPane prefHeight="431.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
+    <TabPane prefHeight="490.0" prefWidth="552.0" tabClosingPolicy="UNAVAILABLE">
   <tabs>
     <Tab text="Отправка запросов">
       <content>
