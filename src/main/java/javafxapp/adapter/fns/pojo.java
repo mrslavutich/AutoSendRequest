@@ -5,13 +5,16 @@ import javafxapp.adapter.SmevFields;
 
 import java.util.UUID;
 
-public class FNS extends SmevFields {
+public class Pojo extends SmevFields {
+
+    private String id210fz;
     public String ogrn;
     public String inn;
     public String idDoc;
     public String isOgrn;
     public String isInn;
     public String ИдЗапросФ;
+    public String NomerDela;
     public int rowNum;
 
     public String getOgrn() {
@@ -68,5 +71,21 @@ public class FNS extends SmevFields {
 
     public void setRowNum(int rowNum) {
         this.rowNum = rowNum;
+    }
+
+    public String getNomerDela() {
+        return NomerDela;
+    }
+
+    public void setNomerDela(String nomerDela) {
+        NomerDela = nomerDela;
+    }
+
+    public String getId210fz() {
+        return id210fz;
+    }
+
+    public void setId210fz(String id210fz) {
+        this.id210fz = id210fz;
     }
 }

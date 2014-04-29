@@ -1,6 +1,7 @@
 package javafxapp.sheduler;
 
 import javafxapp.adapter.domain.Adapter;
+import javafxapp.controller.MainController;
 import javafxapp.db.DatabaseUtil;
 import javafxapp.service.SendDataService;
 import javafxapp.utils.XMLParser;
@@ -105,15 +106,16 @@ public class RequestTimer extends Thread implements IRequestTimer {
                 try {
                     TimerRequests timerRequests = requests.get(key);
                     if (timerRequests.getRequestXml() != null) {
-                        String responseXml = SendDataService.sendDataToSMEV(timerRequests.getRequestXml(), timerRequests.getSmevAddress());
+                        String responseXml = SendDataService.sendDataToSMEV(timerRequests.getRequestXml(), timerRequests.getAdapterId(), timerRequests.getSmevAddress());
                         String respStatus = XMLParser.getResponseStatus(responseXml);
                         Adapter adapter = new Adapter();
                         adapter.setId(Integer.parseInt(key));
-                        adapter.setResponseXml(responseXml);
+                        adapter.setResponseXml(XMLParser.replacer(responseXml));
                         adapter.setResponseStatus(respStatus);
                         DatabaseUtil.saveResponseById(adapter);
                         if (respStatus.equals("ACCEPT")) {
                             TimerCache.getInstance().deleteRequest(key);
+                            MainController.counter(timerRequests.getFoiv());
                         }
                         this.sleep(time * 1000);
                     }
@@ -123,6 +125,7 @@ public class RequestTimer extends Thread implements IRequestTimer {
 
             }
         }else {
+            MainController.writeStatusInExcelFromDB();
             stopRequest();
         }
     }

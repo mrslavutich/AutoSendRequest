@@ -75,20 +75,20 @@ public class Mapper {
         return object;
     }
 
-    public Object fillSmevPojo(HashMap jsonValues, Object pojo) throws Exception {
+    public Object fillSmevPojo(HashMap jsonValues, Object pojo, String foiv) throws Exception {
         createEmptyInsctance(pojo);
+        String senderCode = "", senderName = "";
+        if (foiv.equals("fns")){
+            senderCode = SmevController.senderCodeFNS.getText();
+            senderName = SmevController.senderNameFNS.getText();
+        }else if (foiv.equals("mvd")){
+            senderCode = SmevController.senderCodeMVD.getText();
+            senderName = SmevController.senderNameMVD.getText();
+        }
         Field field = pojo.getClass().getField("SenderCode");
-        field.set(pojo, SmevController.senderCodeFNS.getText());
+        field.set(pojo, senderCode);
         field = pojo.getClass().getField("SenderName");
-        field.set(pojo, SmevController.senderNameFNS.getText());
-        field = pojo.getClass().getField("RecipientCode");
-        field.set(pojo, SmevController.recipientCodeFNS.getText());
-        field = pojo.getClass().getField("RecipientName");
-        field.set(pojo, SmevController.recipientNameFNS.getText());
-        field = pojo.getClass().getField("OriginatorCode");
-        field.set(pojo, SmevController.originatorCodeFNS.getText());
-        field = pojo.getClass().getField("OriginatorName");
-        field.set(pojo, SmevController.originatorNameFNS.getText());
+        field.set(pojo, senderName);
 
         if (jsonValues == null) return pojo;
         Set<String> keys = jsonValues.keySet();

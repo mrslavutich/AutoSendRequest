@@ -1,5 +1,6 @@
 package javafxapp.db;
 
+import javafxapp.adapter.Register;
 import javafxapp.adapter.domain.Adapter;
 import javafxapp.adapter.domain.AdapterDetails;
 import javafxapp.adapter.domain.Settings;
@@ -16,7 +17,7 @@ import java.util.Map;
  */
 public class DatabaseUtil {
 
-    private static final String adapter_query = "SELECT ID, numReq, requestXml, id210fz, smevAddress, adapterName, responseStatus FROM adapter NATURAL JOIN adapterDetails";
+    private static final String adapter_query = "SELECT ID, numReq, requestXml, id210fz, smevAddress, adapterName, responseStatus, foiv FROM adapter NATURAL JOIN adapterDetails";
     private static Connection connection;
     private static Statement statement;
 
@@ -53,8 +54,16 @@ public class DatabaseUtil {
                     "cert_alias VARCHAR(32)," +
                     "password VARCHAR(32));" +
 
-                    "INSERT INTO adapterDetails (id210fz, smevAddress, foiv, adapterName) VALUES ('07', 'http://192.168.100.96:7777/gateway/services/SID0003245', 'ФНС','(Сведения из ЕГРИП)');" +
-                    "INSERT INTO adapterDetails (id210fz, smevAddress, foiv, adapterName) VALUES ('07_2', 'http://192.168.100.96:7777/gateway/services/SID0003245', 'ФНС','(Сведения из ЕГРЮЛ)');" +
+                    "INSERT INTO adapterDetails (id210fz, smevAddress, foiv, adapterName) VALUES ('07FL_short', 'http://192.168.100.96:7777/gateway/services/SID0003245', 'ФНС','Сведения из ЕГРИП(краткие)');" +
+                    "INSERT INTO adapterDetails (id210fz, smevAddress, foiv, adapterName) VALUES ('07UL_short', 'http://192.168.100.96:7777/gateway/services/SID0003245', 'ФНС','Сведения из ЕГРЮЛ(краткие)');" +
+                    "INSERT INTO adapterDetails (id210fz, smevAddress, foiv, adapterName) VALUES ('07FL_full', 'http://192.168.100.96:7777/gateway/services/SID0003245', 'ФНС','Сведения из ЕГРИП(полные)');" +
+                    "INSERT INTO adapterDetails (id210fz, smevAddress, foiv, adapterName) VALUES ('07UL_full', 'http://192.168.100.96:7777/gateway/services/SID0003245', 'ФНС','Сведения из ЕГРЮЛ(полные)');" +
+                    "INSERT INTO adapterDetails (id210fz, smevAddress, foiv, adapterName) VALUES ('410', 'http://smev-mvf.test.gosuslugi.ru:7777/gateway/services/SID0003058', 'МВД','Сведения о судимости');" +
+
+                    "INSERT INTO smevfield (name, value) VALUES ('senderCodeMVD', 'KSIR01001');"+
+                    "INSERT INTO smevfield (name, value) VALUES ('senderNameMVD', 'Тестовый СИР');"+
+                    "INSERT INTO smevfield (name, value) VALUES ('senderCodeFNS', 'KSIR01001');"+
+                    "INSERT INTO smevfield (name, value) VALUES ('senderNameFNS', 'Тестовый СИР');"+
 
                     "INSERT INTO settings (pathFile, key_alias, cert_alias, password) VALUES ('', 'RaUser-2908cdc2-4aff-47c6-9636-d2a98ba3d2b5','RaUser-2908cdc2-4aff-47c6-9636-d2a98ba3d2b5','1234567890');";
             executeUpdate(query);
@@ -64,13 +73,9 @@ public class DatabaseUtil {
     public static void insertRequests(List<Adapter> adapters) {
         clearTable("ADAPTER");
 
-        String query = "", id210fz = "";
+        String query = "";
         for (Adapter adapter: adapters) {
-            if (adapter.getDeclarant() != null && adapter.getDeclarant().equals("ip"))
-                id210fz = "07";
-            else if (adapter.getDeclarant() != null && adapter.getDeclarant().equals("ul"))
-                id210fz = "07_2";
-            query += "INSERT INTO adapter (id210fz, numReq, requestXml, responseStatus) VALUES ('"+ id210fz +"', " + adapter.getNumReq() + ", '" + adapter.getRequestXml() + "', '');";
+            query += "INSERT INTO adapter (id210fz, numReq, requestXml, responseStatus) VALUES ('"+ adapter.getId210fz() +"', " + adapter.getNumReq() + ", '" + adapter.getRequestXml() + "', '');";
         }
         executeUpdate(query);
     }
@@ -80,12 +85,11 @@ public class DatabaseUtil {
         executeUpdate(query);
     }
 
-    public static void saveSmevFields(String foiv, HashMap<String, String> smevFileds) {
+    public static void saveSmevFields(HashMap<String, String> smevFileds) {
         clearTable("smevfield");
         String query = "";
         for (Map.Entry<String, String> entry : smevFileds.entrySet()) {
-            query += "INSERT INTO smevfield (name, value, foiv) VALUES ('" + entry.getKey() + "', '" + entry.getValue() + "', '" + foiv + "');";
-
+            query += "INSERT INTO smevfield (name, value) VALUES ('" + entry.getKey() + "', '" + entry.getValue() + "');";
         }
         executeUpdate(query);
     }
@@ -108,9 +112,9 @@ public class DatabaseUtil {
         return settings;
     }
 
-    public static HashMap<String, String> getSmevFields(String foiv) {
+    public static HashMap<String, String> getSmevFields() {
         HashMap<String, String> hashMap = new HashMap<>();
-            String query = "SELECT name, value FROM smevfield WHERE foiv = '" + foiv + "'";
+            String query = "SELECT name, value FROM smevfield";
             ResultSet resultSet = executeQuery(query);
         try {
             while (resultSet.next()) {
@@ -141,7 +145,7 @@ public class DatabaseUtil {
 
     public static List<Adapter> getRequest(String id210fz) {
         List<Adapter> adapters = new ArrayList<>();
-        String query = adapter_query + " WHERE id210fz = '" + id210fz + "'";
+        String query = adapter_query + " WHERE id210fz like '" + id210fz + "%'";
         getAdapter(adapters, query);
         return adapters;
     }
@@ -149,34 +153,44 @@ public class DatabaseUtil {
     public static void saveResponse(Adapter adapter) {
         String query = "UPDATE adapter SET responseXml = '" + adapter.getResponseXml() + "', " +
                     "responseStatus = '" + adapter.getResponseStatus() + "', dateCall = '" + new java.util.Date() + "'" +
-                    "WHERE numReq = '" + adapter.getNumReq() + "' and id210fz = '" + adapter.getId210fz() + "';";
+                    " WHERE numReq = '" + adapter.getNumReq() + "' and id210fz = '" + adapter.getId210fz() + "';";
         executeUpdate(query);
     }
 
     public static void saveResponseById(Adapter adapter) {
         String query = "UPDATE adapter SET responseXml = '" + adapter.getResponseXml() + "', " +
                         "responseStatus = '" + adapter.getResponseStatus() + "', dateCall = '" + new java.util.Date() + "'" +
-                        "WHERE id = '" + adapter.getId() + "';";
+                        " WHERE id = '" + adapter.getId() + "';";
         executeUpdate(query);
     }
 
-    public static List<Adapter> findReqReadyToSend(int count) {
+    public static List<Adapter> findReqReadyToSend(int count, boolean foivFns, boolean foivMvd) {
         List<Adapter> adapterList = new ArrayList<>();
-        String query = adapter_query + " WHERE responseStatus NOT LIKE 'ACCEPT' limit "+ count +";";
+        String foivs = "";
+        if (foivFns)  foivs = "\'" + Register.foiv.FNS.getValue() + "\'";
+        if (!foivs.isEmpty()){
+           if (foivMvd) foivs += ", \'" + Register.foiv.MVD.getValue() + "\'";
+        }else if (foivMvd) foivs = Register.foiv.MVD.getValue();
+
+        String query = adapter_query + " WHERE responseStatus NOT LIKE 'ACCEPT' and foiv in ("+ foivs +") limit "+ count +";";
         getAdapter(adapterList, query);
         return adapterList;
     }
 
     private static void buildAdapter(List<Adapter> adapterList, ResultSet resultSet) throws SQLException {
+
         Adapter adapter = new Adapter();
         adapter.setId(resultSet.getInt("ID"));
         adapter.setNumReq(resultSet.getInt("numReq"));
         adapter.setId210fz(resultSet.getString("id210fz"));
         adapter.setRequestXml(resultSet.getString("requestXml"));
+        adapter.setResponseStatus(resultSet.getString("responseStatus"));
+
         AdapterDetails adapterDetails = new AdapterDetails();
         adapterDetails.setSmevAddress(resultSet.getString("smevAddress"));
         adapterDetails.setAdapterName(resultSet.getString("adapterName"));
-        adapter.setResponseStatus(resultSet.getString("responseStatus"));
+        adapterDetails.setFoiv(resultSet.getString("foiv"));
+
         adapter.setAdapterDetails(adapterDetails);
         adapterList.add(adapter);
     }
@@ -189,19 +203,21 @@ public class DatabaseUtil {
     }
 
     public static void saveAddressService(String address, String id210fz) {
-        String query = "UPDATE adapterDetails SET  smevAddress ='" + address + "' WHERE id210fz in ('" + id210fz + "','" + id210fz + "_2');";
+        String query = "UPDATE adapterDetails SET  smevAddress ='" + address + "' WHERE id210fz like '" + id210fz + "%';";
         executeUpdate(query);
     }
 
     public static List<AdapterDetails> getAdapterDetails() {
         List<AdapterDetails> listAdapterDetails = new ArrayList<>();
-            String query = "SELECT smevAddress FROM adapterDetails";
+            String query = "SELECT foiv, smevAddress FROM adapterDetails";
             ResultSet resultSet = executeQuery(query);
             AdapterDetails adapterDetails;
         try {
             while (resultSet.next()) {
                 adapterDetails = new AdapterDetails();
-                adapterDetails.setSmevAddress(resultSet.getString(1));
+                adapterDetails.setSmevAddress(resultSet.getString("smevAddress"));
+                adapterDetails.setFoiv(resultSet.getString("foiv"));
+                listAdapterDetails.add(adapterDetails);
             }
         } catch (SQLException e) {
             e.printStackTrace();

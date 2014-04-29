@@ -4,6 +4,8 @@ public class TimerRequests {
     private String smevAddress;
     private String requestXml;
     private String adapterId;
+    private String id210fz;
+    private String foiv;
 
     public String getSmevAddress() {
         return smevAddress;
@@ -27,5 +29,21 @@ public class TimerRequests {
 
     public void setAdapterId(String adapterId) {
         this.adapterId = adapterId;
+    }
+
+    public String getFoiv() {
+        return foiv;
+    }
+
+    public void setFoiv(String foiv) {
+        this.foiv = foiv;
+    }
+
+    public String getId210fz() {
+        return id210fz;
+    }
+
+    public void setId210fz(String id210fz) {
+        this.id210fz = id210fz;
     }
 }
