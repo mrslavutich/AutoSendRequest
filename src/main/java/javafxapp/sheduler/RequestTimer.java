@@ -16,14 +16,13 @@ import java.util.Set;
 public class RequestTimer extends Thread implements IRequestTimer {
 
     private static volatile Boolean started;
-    private int time;
+    private int time = 0;
     private String days;
     private String hours;
     private String minutes;
     private String seconds;
     private Date startTime;
     private Date endTime;
-    private int countReq;
 
     @Override
     public void run() {
@@ -36,13 +35,15 @@ public class RequestTimer extends Thread implements IRequestTimer {
                         this.sleep(10000);
                     }
                     pingWorkTime();
+
+                    System.out.println("++++++++++++++++++");
+                    if (!seconds.isEmpty()) time = Integer.parseInt(seconds);
+                    if (!minutes.isEmpty()) time += Integer.parseInt(minutes) * 60;
+                    if (!hours.isEmpty()) time += Integer.parseInt(hours) * 60 * 60;
+                    if (!days.isEmpty()) time += Integer.parseInt(days) * 60 * 60 * 24;
+                    sendRequests();
                 }
-                System.out.println("++++++++++++++++++");
-                if (!seconds.isEmpty()) time = Integer.parseInt(seconds);
-                if (!minutes.isEmpty()) time += Integer.parseInt(minutes) * 60;
-                if (!hours.isEmpty()) time += Integer.parseInt(hours) * 60 * 60;
-                if (!days.isEmpty()) time += Integer.parseInt(days) * 60 * 60 * 24;
-                sendRequests();
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (NumberFormatException e) {
@@ -54,7 +55,7 @@ public class RequestTimer extends Thread implements IRequestTimer {
     }
 
     private void pingWorkTime() throws InterruptedException {
-        if (startTime !=null && endTime != null &&
+        if (startTime != null && endTime != null &&
                 startTime.after(currentTime()) && endTime.before(currentTime())){
             sleep(30000);
             pingWorkTime();
@@ -90,7 +91,7 @@ public class RequestTimer extends Thread implements IRequestTimer {
 
     @Override
     public synchronized void stopRequest() {
-        this.started = false;
+        started = false;
     }
 
 
@@ -101,7 +102,7 @@ public class RequestTimer extends Thread implements IRequestTimer {
         if (requests.size() > 0) {
             Set<String> keys = requests.keySet();
             Iterator<String> iterator = keys.iterator();
-            while (iterator.hasNext()) {
+            while (iterator.hasNext() && started) {
                 String key = iterator.next();
                 try {
                     TimerRequests timerRequests = requests.get(key);
@@ -117,7 +118,7 @@ public class RequestTimer extends Thread implements IRequestTimer {
                             TimerCache.getInstance().deleteRequest(key);
                             MainController.counter(timerRequests.getFoiv());
                         }
-                        this.sleep(time * 1000);
+                        sleep(time * 1000);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -125,7 +126,6 @@ public class RequestTimer extends Thread implements IRequestTimer {
 
             }
         }else {
-            MainController.writeStatusInExcelFromDB();
             stopRequest();
         }
     }

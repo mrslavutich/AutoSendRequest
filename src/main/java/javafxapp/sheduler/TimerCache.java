@@ -33,6 +33,10 @@ public class TimerCache {
         requestsToSend.remove(idRequest);
     }
 
+    public synchronized void deleteRequests(){
+        requestsToSend.clear();
+    }
+
     public HashMap<String, TimerRequests> requestsList(){
         return requestsToSend;
     }

@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -20,10 +21,9 @@ import javafxapp.elements.NumberTextField;
 import javafxapp.elements.TimeTextField;
 import javafxapp.sheduler.RequestTimer;
 import javafxapp.sheduler.TimerCache;
-import javafxapp.utils.ReadExcelFile;
+import javafxapp.utils.ExcelReader;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -35,10 +35,10 @@ public class MainController extends VBox implements Initializable {
 
 
     @FXML
-    public Button sendRequests;
+    public Node sendRequests;
     @FXML
     public static TextField filePath;
-
+    public static String newFilePath;
     @FXML
     public static Label countFNSRequests;
     @FXML
@@ -62,9 +62,9 @@ public class MainController extends VBox implements Initializable {
     public TextField idMinutes;
     @FXML
     public TextField idSeconds;
-    @FXML
-    public CheckBox autoSend;
 
+    @FXML
+    public Node idLoadData;
 
     @FXML
     private TimeTextField startTime;
@@ -101,6 +101,7 @@ public class MainController extends VBox implements Initializable {
             if (file != null) {
                 DatabaseUtil.savePathFile(file.getCanonicalPath());
                 filePath.setText(file.getCanonicalPath());
+                idLoadData.setDisable(false);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -117,11 +118,11 @@ public class MainController extends VBox implements Initializable {
             try {
                 for (Register register: Register.values()){
                     if (!register.getId210fz().equals("410")) {
-                        fnsList = ReadExcelFile.readFNSData(filePath.getText(), register.getNameAdapter());
+                        fnsList = ExcelReader.readFNSData(filePath.getText(), register.getNameAdapter());
                         map.put(register.getId210fz(), fnsList);
                     }
                 }
-                mvdList = ReadExcelFile.readMVDData(filePath.getText());
+                mvdList = ExcelReader.readMVDData(filePath.getText());
 
             } catch (IOException e) {
                 ErrorController.showDialog("Невозможно прочитать файл");
@@ -142,7 +143,10 @@ public class MainController extends VBox implements Initializable {
             }
             if (adapterFns != null)  allAdapters.addAll(adapterFns);
             if (adapterMvd != null)  allAdapters.addAll(adapterMvd);
-            if (allAdapters.size() > 0) DatabaseUtil.insertRequests(allAdapters);
+            if (allAdapters.size() > 0) {
+                DatabaseUtil.insertRequests(allAdapters);
+                sendRequests.setDisable(false);
+            }
 
         }
     }
@@ -150,13 +154,10 @@ public class MainController extends VBox implements Initializable {
     @FXML
     public void handleSubmitSendRequests(ActionEvent event) throws Exception {
 
-        if (sendRequests.getText().equals(textButtonOnSend)) {
+        if (((Button)sendRequests).getText().equals(textButtonOnSend)) {
+            ((Button)sendRequests).setText(textButtonOffSend);
+
             if (checkboxFNS.isSelected() || checkboxMVD.isSelected()) {
-                try {
-                    new FileOutputStream(filePath.getText());
-                } catch (IOException e) {
-                    ErrorController.showDialogWithException("Закройте файл: " + filePath.getText());
-                }
 
                 Date startWork = null, endWork = null;
                 int countReq = Integer.MAX_VALUE;
@@ -175,26 +176,42 @@ public class MainController extends VBox implements Initializable {
 
 
                 adapters = DatabaseUtil.findReqReadyToSend(countReq, checkboxFNS.isSelected(), checkboxMVD.isSelected());
-                for (Adapter adapter : adapters) {
-                    TimerCache.getInstance().addRequest(adapter);
-                }
-                requestTimer.startRequest(idDays.getText(), idHours.getText(), idMinutes.getText(), idSeconds.getText(),
+                if (adapters != null && adapters.size() > 0 ){
+                    for (Adapter adapter : adapters) {
+                        TimerCache.getInstance().addRequest(adapter);
+                    }
+                    requestTimer.startRequest(idDays.getText(), idHours.getText(), idMinutes.getText(), idSeconds.getText(),
                         startWork, endWork);
 
-                sendRequests.setText(textButtonOffSend);
+                    try {
+                        newFilePath = createNewFile();
+                        File newFile = new File(newFilePath);
+                        ExcelReader.copyFile(new File(filePath.getText()), newFile);
+
+                    } catch (Exception e) {
+                        ErrorController.showDialogWithException("Закройте файл: " + newFilePath);
+                    }
+                }
             }
         } else {
             writeStatusInExcelFromDB();
-            requestTimer.stopRequest();
-            sendRequests.setText(textButtonOnSend);
+            if (requestTimer != null) {
+                requestTimer.stopRequest();
+                TimerCache.getInstance().deleteRequests();
+            }
+            ((Button)sendRequests).setText(textButtonOnSend);
         }
 
+    }
+
+    private String createNewFile() {
+        return filePath.getText().replace(".xls", "_status.xls");
     }
 
     public static void writeStatusInExcelFromDB() {
         if (adapters != null && adapters.size() > 0) {
             List<Adapter> adapterList = DatabaseUtil.getResponseStatus(adapters);
-            /*ReadExcelFile.writeStatus(adapterList, MainController.filePath.getText());*/
+            /*ExcelReader.writeStatus(adapterList, MainController.filePath.getText());*/
             adapters = null;
         }
     }
@@ -223,6 +240,8 @@ public class MainController extends VBox implements Initializable {
         if (settings != null && settings.getPathFile() != null && !settings.getPathFile().equals("")) {
             filePath.setText(settings.getPathFile());
         }
+        if (filePath.getText().isEmpty()) idLoadData.setDisable(true);
+        sendRequests.setDisable(true);
         /*else idLoadData.setDisable(true);*/
     }
 
@@ -240,7 +259,7 @@ public class MainController extends VBox implements Initializable {
             adapter.setResponseStatus(respStatus);
             DatabaseUtil.saveResponse(adapter);
         }
-        ReadExcelFile.writeStatus(adapters, filePath.getText(), sheetName);
+        ExcelReader.writeStatus(adapters, filePath.getText(), sheetName);
 
     }*/
 }

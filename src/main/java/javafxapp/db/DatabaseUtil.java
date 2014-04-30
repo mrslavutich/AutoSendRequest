@@ -170,7 +170,7 @@ public class DatabaseUtil {
         if (foivFns)  foivs = "\'" + Register.foiv.FNS.getValue() + "\'";
         if (!foivs.isEmpty()){
            if (foivMvd) foivs += ", \'" + Register.foiv.MVD.getValue() + "\'";
-        }else if (foivMvd) foivs = Register.foiv.MVD.getValue();
+        }else if (foivMvd) foivs = "\'" + Register.foiv.MVD.getValue() + "\'";
 
         String query = adapter_query + " WHERE responseStatus NOT LIKE 'ACCEPT' and foiv in ("+ foivs +") limit "+ count +";";
         getAdapter(adapterList, query);

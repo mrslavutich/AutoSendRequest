@@ -4,6 +4,7 @@ import javafxapp.adapter.Register;
 import javafxapp.adapter.domain.Adapter;
 import javafxapp.adapter.fns.Pojo;
 import javafxapp.controller.BuilderRequest;
+import javafxapp.controller.ErrorController;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -12,6 +13,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,7 +23,7 @@ import java.util.List;
 /**
  * User: vmaksimov
  */
-public class ReadExcelFile {
+public class ExcelReader {
 
     public static final String status_response = "Статус ответа";
     private static HSSFWorkbook workbook;
@@ -223,6 +226,13 @@ public class ReadExcelFile {
             return cell.getStringCellValue();
     }
 
+    public static void copyFile(File from, File to) {
+        try {
+            Files.copy(from.toPath(), to.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            ErrorController.showDialog("Невозможно скопировать файл для записи результирующих статусов " + e.getLocalizedMessage());
+        }
+    }
 }
 
 
