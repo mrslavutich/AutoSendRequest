@@ -3,23 +3,23 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafxapp.controller.SmevController?>
-<SmevController id="smevfields" xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="462.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" fx:controller="javafxapp.controller.SmevController" >
+<SmevController id="smevfields" xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="470.0" prefWidth="492.0" xmlns="http://javafx.com/javafx/8" fx:controller="javafxapp.controller.SmevController" >
   <panes>
     <TitledPane text="ФНС(Сведения из ЕГРИП\ЕГРЮЛ)">
       <content>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-            <children>
-                <Label layoutX="87.0" layoutY="67.0" prefHeight="17.0" prefWidth="332.0" text="Данные о системе-инициаторе взаимодействия (Потребителе):" textAlignment="CENTER" wrapText="true" />
-                <TextField fx:id="senderCodeFNS" layoutX="148.0" layoutY="100.0" prefHeight="22.0" prefWidth="92.0" />
-                <Label layoutX="110.0" layoutY="104.0" text="Код" />
-                <Label layoutX="279.0" layoutY="104.0" text="Наименование" />
-                <TextField fx:id="senderNameFNS" layoutX="375.0" layoutY="100.0" prefHeight="22.0" prefWidth="92.0" />
+              <children>
+                  <Label layoutX="86.0" layoutY="67.0" prefHeight="17.0" prefWidth="332.0" text="Данные о системе-инициаторе взаимодействия (Потребителе):" textAlignment="CENTER" wrapText="true" />
+                  <TextField fx:id="senderCodeFNS" layoutX="120.0" layoutY="100.0" prefHeight="22.0" prefWidth="92.0" />
+                  <Label layoutX="86.0" layoutY="104.0" text="Код" />
+                  <Label layoutX="256.0" layoutY="104.0" text="Наименование" />
+                  <TextField fx:id="senderNameFNS" layoutX="347.0" layoutY="100.0" prefHeight="22.0" prefWidth="92.0" />
 
-                <TextField fx:id="addressFNS" alignment="TOP_CENTER" layoutX="179.0" layoutY="157.0" prefHeight="22.0" prefWidth="310.0" promptText="Введите адрес сервиса" text="" />
-                <Label alignment="BASELINE_RIGHT" contentDisplay="RIGHT" layoutX="89.0" layoutY="157.0" prefHeight="22.0" prefWidth="75.0" text="Адрес сервиса" textAlignment="CENTER" wrapText="true" />
+                  <TextField fx:id="addressFNS" alignment="TOP_CENTER" layoutX="121.0" layoutY="157.0" prefHeight="22.0" prefWidth="320.0" promptText="Введите адрес сервиса" text="" />
+                  <Label alignment="BASELINE_RIGHT" contentDisplay="RIGHT" layoutX="18.0" layoutY="157.0" prefHeight="22.0" prefWidth="88.0" text="Адрес в РСМЭВ" textAlignment="CENTER" wrapText="true" />
 
-                <Button layoutX="419.0" layoutY="221.0" mnemonicParsing="false" onAction="#handleSaveSmevFileds" text="Сохранить" />
-            </children>
+                  <Button layoutX="371.0" layoutY="221.0" mnemonicParsing="false" onAction="#handleSaveSmevFileds" text="Сохранить" />
+              </children>
         </AnchorPane>
       </content>
     </TitledPane>
@@ -27,16 +27,16 @@
       <content>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
-                  <Label layoutX="87.0" layoutY="67.0" prefHeight="17.0" prefWidth="332.0" text="Данные о системе-инициаторе взаимодействия (Потребителе):" textAlignment="CENTER" wrapText="true" />
-                  <TextField fx:id="senderCodeMVD" layoutX="148.0" layoutY="100.0" prefHeight="22.0" prefWidth="92.0" />
-                  <Label layoutX="110.0" layoutY="104.0" text="Код" />
-                  <Label layoutX="279.0" layoutY="104.0" text="Наименование" />
-                  <TextField fx:id="senderNameMVD" layoutX="375.0" layoutY="100.0" prefHeight="22.0" prefWidth="92.0" />
+                  <Label layoutX="86.0" layoutY="67.0" prefHeight="17.0" prefWidth="332.0" text="Данные о системе-инициаторе взаимодействия (Потребителе):" textAlignment="CENTER" wrapText="true" />
+                  <TextField fx:id="senderCodeMVD" layoutX="120.0" layoutY="100.0" prefHeight="22.0" prefWidth="92.0" />
+                  <Label layoutX="86.0" layoutY="104.0" text="Код" />
+                  <Label layoutX="256.0" layoutY="104.0" text="Наименование" />
+                  <TextField fx:id="senderNameMVD" layoutX="347.0" layoutY="100.0" prefHeight="22.0" prefWidth="92.0" />
 
-                  <TextField fx:id="addressMVD" alignment="TOP_CENTER" layoutX="179.0" layoutY="157.0" prefHeight="22.0" prefWidth="310.0" promptText="Введите адрес сервиса" text="" />
-                  <Label alignment="BASELINE_RIGHT" contentDisplay="RIGHT" layoutX="89.0" layoutY="157.0" prefHeight="22.0" prefWidth="75.0" text="Адрес сервиса" textAlignment="CENTER" wrapText="true" />
+                  <TextField fx:id="addressMVD" alignment="TOP_CENTER" layoutX="121.0" layoutY="157.0" prefHeight="22.0" prefWidth="320.0" promptText="Введите адрес сервиса" text="" />
+                  <Label alignment="BASELINE_RIGHT" contentDisplay="RIGHT" layoutX="18.0" layoutY="157.0" prefHeight="22.0" prefWidth="88.0" text="Адрес в РСМЭВ" textAlignment="CENTER" wrapText="true" />
 
-                  <Button layoutX="419.0" layoutY="221.0" mnemonicParsing="false" onAction="#handleSaveSmevFileds" text="Сохранить" />
+                  <Button layoutX="371.0" layoutY="221.0" mnemonicParsing="false" onAction="#handleSaveSmevFileds" text="Сохранить" />
               </children>
           </AnchorPane>
       </content>

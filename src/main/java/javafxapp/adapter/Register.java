@@ -57,4 +57,12 @@ public enum Register {
         return "";
 
     }
+
+    public static String findNameAdapter(String id210fz) {
+        for (Register register : Register.values()) {
+            if (id210fz.contains(register.getId210fz())) return register.nameAdapter;
+        }
+        return "";
+
+    }
 }

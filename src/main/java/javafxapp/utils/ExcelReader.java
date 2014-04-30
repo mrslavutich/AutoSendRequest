@@ -4,7 +4,7 @@ import javafxapp.adapter.Register;
 import javafxapp.adapter.domain.Adapter;
 import javafxapp.adapter.fns.Pojo;
 import javafxapp.controller.BuilderRequest;
-import javafxapp.controller.ErrorController;
+import javafxapp.controller.MainController;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -31,7 +31,7 @@ public class ExcelReader {
     private static DecimalFormat decimalFormat = new DecimalFormat("#");
     public static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
     private static String lblStatus;
-    private static int positionStatus;
+    private static int positionCellStatus;
 
     public static List<Pojo> readFNSData(String filePath, String nameAdapter) throws IOException {
         readFile(filePath);
@@ -66,10 +66,9 @@ public class ExcelReader {
         workbook = new HSSFWorkbook(fs);
     }
 
-    public static void writeStatus(List<Adapter> adapterList, String filePath, String sheetName) {
-        for (int i = 0; i < 3; i++) {
+    public static void writeStatus(List<Adapter> adapterList, String filePath) {
+        for (int i = 0; i < 5; i++) {
             HSSFSheet sheet = workbook.getSheetAt(i);
-            if (sheet.getSheetName().startsWith(sheetName)) {
 
                 for (int r = 0; r <= sheet.getLastRowNum(); r++) {
                     Row row = sheet.getRow(r);
@@ -79,31 +78,28 @@ public class ExcelReader {
                 }
                 writeOutputStream(filePath);
             }
-        }
     }
 
 
     private static void setStatusInCell(List<Adapter> adapterList, HSSFSheet sheet, int r, Row row) {
-        definePositionStatus(row);
-        Cell cell = row.getCell(positionStatus);
         for (Adapter adapter: adapterList) {
             if ((adapter.getNumReq() == r) &&
                     sheet.getSheetName().contains(adapter.getAdapterDetails().getAdapterName())) {
+                definePositionStatus(row, adapter.getAdapterDetails().getAdapterName());
+                Cell cell = row.getCell(positionCellStatus);
                 if (cell == null)
-                    row.createCell(positionStatus).setCellValue(adapter.getResponseStatus());
+                    row.createCell(positionCellStatus).setCellValue(adapter.getResponseStatus());
                 else
                     cell.setCellValue(adapter.getResponseStatus());
             }
         }
     }
 
-    private static void definePositionStatus(Row row) {
-        if(row.getRowNum() < 3) {
-            lblStatus = getValue(row.getCell(AdapterCells.Fns.status_short));
-            findLblStatus(row, AdapterCells.Fns.status_full);
-            findLblStatus(row, AdapterCells.Mvd.status);
-            if (lblStatus.contains(status_response)) positionStatus = row.getRowNum();
-        }
+    private static void definePositionStatus(Row row, String nameAdapter) {
+        if  (nameAdapter.equals(Register.id07FL_short.getNameAdapter()) || nameAdapter.equals(Register.id07UL_short.getNameAdapter())) positionCellStatus = AdapterCells.Fns.status_short;
+        if  (nameAdapter.equals(Register.id07FL_full.getNameAdapter()) || nameAdapter.equals(Register.id07UL_full.getNameAdapter())) positionCellStatus = AdapterCells.Fns.status_full;
+        if  (nameAdapter.equals(Register.id410.getNameAdapter())) positionCellStatus = AdapterCells.Mvd.status;
+
     }
 
     private static void findLblStatus(Row row, int position) {
@@ -226,13 +222,17 @@ public class ExcelReader {
             return cell.getStringCellValue();
     }
 
-    public static void copyFile(File from, File to) {
-        try {
-            Files.copy(from.toPath(), to.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            ErrorController.showDialog("Невозможно скопировать файл для записи результирующих статусов " + e.getLocalizedMessage());
-        }
+    public static void copyFile(File from) throws IOException {
+        MainController.newFilePath = createNewFile(from);
+        File newFile = new File(MainController.newFilePath);
+        if (newFile.exists()) newFile.deleteOnExit();
+        Files.copy(from.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
+
+    private static String createNewFile(File file) {
+        return file.getAbsolutePath().replace(".xls", "_status.xls");
+    }
+
 }
 
 

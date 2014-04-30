@@ -1,6 +1,7 @@
 package javafxapp.controller;
 
 
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
@@ -31,6 +32,7 @@ public class ErrorController {
     private static void invokeStage(String message, String title) {
         Label label = new Label(message);
         label.setWrapText(true);
+        label.setAlignment(Pos.BASELINE_CENTER);
         StackPane secondaryLayout = new StackPane();
         secondaryLayout.getChildren().add(label);
         Scene secondScene = new Scene(secondaryLayout, 500, 100);

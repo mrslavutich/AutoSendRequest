@@ -35,7 +35,7 @@ public class MainController extends VBox implements Initializable {
 
 
     @FXML
-    public Node sendRequests;
+    public static Node sendRequests;
     @FXML
     public static TextField filePath;
     public static String newFilePath;
@@ -155,7 +155,9 @@ public class MainController extends VBox implements Initializable {
     public void handleSubmitSendRequests(ActionEvent event) throws Exception {
 
         if (((Button)sendRequests).getText().equals(textButtonOnSend)) {
-            ((Button)sendRequests).setText(textButtonOffSend);
+            changeTextOffSendButton();
+
+            ExcelReader.copyFile(new File(filePath.getText()));
 
             if (checkboxFNS.isSelected() || checkboxMVD.isSelected()) {
 
@@ -177,41 +179,43 @@ public class MainController extends VBox implements Initializable {
 
                 adapters = DatabaseUtil.findReqReadyToSend(countReq, checkboxFNS.isSelected(), checkboxMVD.isSelected());
                 if (adapters != null && adapters.size() > 0 ){
-                    for (Adapter adapter : adapters) {
-                        TimerCache.getInstance().addRequest(adapter);
-                    }
-                    requestTimer.startRequest(idDays.getText(), idHours.getText(), idMinutes.getText(), idSeconds.getText(),
-                        startWork, endWork);
-
                     try {
-                        newFilePath = createNewFile();
-                        File newFile = new File(newFilePath);
-                        ExcelReader.copyFile(new File(filePath.getText()), newFile);
+                        for (Adapter adapter : adapters) {
+                            TimerCache.getInstance().addRequest(adapter);
+                        }
 
+                        requestTimer.startRequest(idDays.getText(), idHours.getText(), idMinutes.getText(), idSeconds.getText(),
+                                startWork, endWork);
                     } catch (Exception e) {
                         ErrorController.showDialogWithException("Закройте файл: " + newFilePath);
                     }
                 }
             }
         } else {
-            writeStatusInExcelFromDB();
+            if (TimerCache.getInstance().requestsList().size() > 0)
+                writeStatusInExcelFromDB();
             if (requestTimer != null) {
                 requestTimer.stopRequest();
                 TimerCache.getInstance().deleteRequests();
             }
-            ((Button)sendRequests).setText(textButtonOnSend);
+            changeTextOnSendButton();
         }
 
     }
 
-    private String createNewFile() {
-        return filePath.getText().replace(".xls", "_status.xls");
+    private void changeTextOffSendButton() {
+        ((Button)sendRequests).setText(textButtonOffSend);
     }
 
-    public static void writeStatusInExcelFromDB() {
+    public static void changeTextOnSendButton() {
+        ((Button) sendRequests).setText(textButtonOnSend);
+    }
+
+
+    public synchronized static void writeStatusInExcelFromDB() {
         if (adapters != null && adapters.size() > 0) {
             List<Adapter> adapterList = DatabaseUtil.getResponseStatus(adapters);
-            /*ExcelReader.writeStatus(adapterList, MainController.filePath.getText());*/
+            ExcelReader.writeStatus(adapterList, MainController.newFilePath);
             adapters = null;
         }
     }
@@ -232,6 +236,27 @@ public class MainController extends VBox implements Initializable {
         });
     }
 
+
+    @FXML
+    public void checkAccessTimeWork(ActionEvent event) {
+        if (timeWork.isSelected()) {
+            startTime.setDisable(false);
+            endTime.setDisable(false);
+        }else{
+            startTime.setDisable(true);
+            endTime.setDisable(true);
+        }
+    }
+
+    @FXML
+    public void checkAccessCountReq(ActionEvent actionEvent) {
+        if (checkBoxCountReq.isSelected()) {
+            countReqField.setDisable(false);
+        }else{
+            countReqField.setDisable(true);
+        }
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
@@ -242,24 +267,6 @@ public class MainController extends VBox implements Initializable {
         }
         if (filePath.getText().isEmpty()) idLoadData.setDisable(true);
         sendRequests.setDisable(true);
-        /*else idLoadData.setDisable(true);*/
     }
 
-    /*
-    sendRequests("07", addressFNS.getText(), Register.foiv.FNS.getValue());
-    private void sendRequests(String id210fz, String address, String sheetName) throws Exception {
-        List<Adapter> adapters = DatabaseUtil.getRequest(id210fz);
-        for (Adapter adapter : adapters) {
-            String responseXml = SendDataService.sendDataToSMEV(adapter.getRequestXml(), id210fz, address);
-            String respStatus = XMLParser.getResponseStatus(responseXml);
-            if (respStatus.equals("ACCEPT")) {
-                counter(sheetName);
-            }
-            adapter.setResponseXml(XMLParser.replacer(responseXml));
-            adapter.setResponseStatus(respStatus);
-            DatabaseUtil.saveResponse(adapter);
-        }
-        ExcelReader.writeStatus(adapters, filePath.getText(), sheetName);
-
-    }*/
 }

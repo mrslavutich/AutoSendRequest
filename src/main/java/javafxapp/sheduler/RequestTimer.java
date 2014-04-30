@@ -1,5 +1,6 @@
 package javafxapp.sheduler;
 
+import javafx.application.Platform;
 import javafxapp.adapter.domain.Adapter;
 import javafxapp.controller.MainController;
 import javafxapp.db.DatabaseUtil;
@@ -12,6 +13,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
+
+import static javafxapp.controller.MainController.writeStatusInExcelFromDB;
 
 public class RequestTimer extends Thread implements IRequestTimer {
 
@@ -29,20 +32,20 @@ public class RequestTimer extends Thread implements IRequestTimer {
         started = true;
 
         while (true) {
+        synchronized (started) {
             try {
-                synchronized (started) {
-                    while (!started) {
-                        this.sleep(10000);
-                    }
-                    pingWorkTime();
-
-                    System.out.println("++++++++++++++++++");
-                    if (!seconds.isEmpty()) time = Integer.parseInt(seconds);
-                    if (!minutes.isEmpty()) time += Integer.parseInt(minutes) * 60;
-                    if (!hours.isEmpty()) time += Integer.parseInt(hours) * 60 * 60;
-                    if (!days.isEmpty()) time += Integer.parseInt(days) * 60 * 60 * 24;
-                    sendRequests();
+                while (!started) {
+                    this.sleep(10000);
+                    this.started = false;
                 }
+                pingWorkTime();
+
+                System.out.println("+++create new Thread+++");
+                if (!seconds.isEmpty()) time = Integer.parseInt(seconds);
+                if (!minutes.isEmpty()) time += Integer.parseInt(minutes) * 60;
+                if (!hours.isEmpty()) time += Integer.parseInt(hours) * 60 * 60;
+                if (!days.isEmpty()) time += Integer.parseInt(days) * 60 * 60 * 24;
+                sendRequests();
 
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -50,7 +53,7 @@ public class RequestTimer extends Thread implements IRequestTimer {
                 System.err.println("Could not parse time");
                 started = false;
             }
-
+        }
         }
     }
 
@@ -96,7 +99,7 @@ public class RequestTimer extends Thread implements IRequestTimer {
 
 
     @Override
-    public void sendRequests() {
+    public synchronized void sendRequests() {
         HashMap<String, TimerRequests> requests = new HashMap<String, TimerRequests>();
         requests.putAll(TimerCache.getInstance().requestsList());
         if (requests.size() > 0) {
@@ -126,6 +129,13 @@ public class RequestTimer extends Thread implements IRequestTimer {
 
             }
         }else {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    MainController.changeTextOnSendButton();
+                }
+            });
+            writeStatusInExcelFromDB();
             stopRequest();
         }
     }

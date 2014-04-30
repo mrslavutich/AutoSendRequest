@@ -58,7 +58,7 @@ public class DatabaseUtil {
                     "INSERT INTO adapterDetails (id210fz, smevAddress, foiv, adapterName) VALUES ('07UL_short', 'http://192.168.100.96:7777/gateway/services/SID0003245', 'ФНС','Сведения из ЕГРЮЛ(краткие)');" +
                     "INSERT INTO adapterDetails (id210fz, smevAddress, foiv, adapterName) VALUES ('07FL_full', 'http://192.168.100.96:7777/gateway/services/SID0003245', 'ФНС','Сведения из ЕГРИП(полные)');" +
                     "INSERT INTO adapterDetails (id210fz, smevAddress, foiv, adapterName) VALUES ('07UL_full', 'http://192.168.100.96:7777/gateway/services/SID0003245', 'ФНС','Сведения из ЕГРЮЛ(полные)');" +
-                    "INSERT INTO adapterDetails (id210fz, smevAddress, foiv, adapterName) VALUES ('410', 'http://smev-mvf.test.gosuslugi.ru:7777/gateway/services/SID0003058', 'МВД','Сведения о судимости');" +
+                    "INSERT INTO adapterDetails (id210fz, smevAddress, foiv, adapterName) VALUES ('410', 'http://smev-mvf.test.gosuslugi.ru:7777/gateway/services/SID000305', 'МВД','Сведения о судимости');" +
 
                     "INSERT INTO smevfield (name, value) VALUES ('senderCodeMVD', 'KSIR01001');"+
                     "INSERT INTO smevfield (name, value) VALUES ('senderNameMVD', 'Тестовый СИР');"+

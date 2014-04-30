@@ -48,14 +48,12 @@ public class TimeTextField extends TextField {
 
     @Override
     public void appendText(String text) {
-        // Ignore this. Our text is always 8 characters long, we cannot append anything
     }
 
     @Override
     public boolean deleteNextChar() {
         boolean success = false ;
 
-        // If there's a selection, delete it:
         final IndexRange selection = getSelection();
         if (selection.getLength()>0) {
             int selectionEnd = selection.getEnd();
@@ -63,7 +61,6 @@ public class TimeTextField extends TextField {
             this.positionCaret(selectionEnd);
             success = true ;
         } else {
-            // If the caret preceeds a digit, replace that digit with a zero and move the caret forward. Else just move the caret forward.
             int caret = this.getCaretPosition();
             if (caret % 3 != 2) { // not preceeding a colon
                 String currentText = this.getText();
@@ -78,7 +75,6 @@ public class TimeTextField extends TextField {
     @Override
     public boolean deletePreviousChar() {
         boolean success = false ;
-        // If there's a selection, delete it:
         final IndexRange selection = getSelection();
         if (selection.getLength()>0) {
             int selectionStart = selection.getStart();
@@ -86,7 +82,6 @@ public class TimeTextField extends TextField {
             this.positionCaret(selectionStart);
             success = true ;
         } else {
-            // If the caret is after a digit, replace that digit with a zero and move the caret backward. Else just move the caret back.
             int caret = this.getCaretPosition();
             if (caret == 3) caret = 2; // miss colon
             if (caret % 3 != 0) { // not following a colon
@@ -106,7 +101,6 @@ public class TimeTextField extends TextField {
 
     @Override
     public void deleteText(int begin, int end) {
-        // Replace all digits in the given range with zero:
         StringBuilder builder = new StringBuilder(this.getText());
         for (int c = begin; c<end; c++) {
             if (c % 3 != 2) { // Not at a colon:
@@ -118,7 +112,6 @@ public class TimeTextField extends TextField {
 
     @Override
     public void insertText(int index, String text) {
-        // Handle an insert by replacing the range from index to index+text.length() with text, if that results in a valid string:
         StringBuilder builder = new StringBuilder(this.getText());
         builder.replace(index, index+text.length(), text);
         final String testText = builder.toString();
@@ -182,7 +175,6 @@ public class TimeTextField extends TextField {
             }
             return true ;
         } catch (NumberFormatException nfe) {
-            // regex matching should assure we never reach this catch block
             assert false ;
             return false ;
         }
@@ -197,7 +189,6 @@ public class TimeTextField extends TextField {
         }
         @Override
         protected int computeValue() {
-            // Crazy enum magic
             String token = getText().split(":")[unit.ordinal()];
             return Integer.parseInt(token);
         }
