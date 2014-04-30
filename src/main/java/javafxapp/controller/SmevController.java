@@ -8,7 +8,6 @@ import javafx.scene.control.TextField;
 import javafxapp.adapter.Register;
 import javafxapp.adapter.domain.AdapterDetails;
 import javafxapp.db.DatabaseUtil;
-import javafxapp.handleFault.FaultsUtils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -40,17 +39,27 @@ public class SmevController extends Accordion implements Initializable{
     public TextField addressMVD;
 
     @FXML
-    public void handleSaveSmevFileds(ActionEvent event) throws Exception {
+    public void handleSaveSmevFiledsFNS(ActionEvent event) throws Exception {
 
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put("senderCodeFNS", senderCodeFNS.getText());
         hashMap.put("senderNameFNS", senderNameFNS.getText());
-        hashMap.put("senderCodeMVD", senderCodeMVD.getText());
-        hashMap.put("senderNameMVD", senderNameMVD.getText());
 
         if (checkAccessService(addressFNS.getText(), Register.foiv.FNS.getValue())){
             DatabaseUtil.saveAddressService(addressFNS.getText(), "07");
         }
+
+        DatabaseUtil.saveSmevFields(hashMap);
+
+    }
+
+    @FXML
+    public void handleSaveSmevFiledsMVD(ActionEvent event) throws Exception {
+
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("senderCodeMVD", senderCodeMVD.getText());
+        hashMap.put("senderNameMVD", senderNameMVD.getText());
+
         if (checkAccessService(addressMVD.getText(), Register.foiv.MVD.getValue())){
             DatabaseUtil.saveAddressService(addressMVD.getText(), "410");
         }
@@ -60,15 +69,20 @@ public class SmevController extends Accordion implements Initializable{
     }
 
     public static boolean checkAccessService(String address, String foiv) throws MalformedURLException {
+        if (!address.endsWith(getSuffix())) address = address + getSuffix();
         URL url = new URL(address);
         try {
             URLConnection urlConnection = url.openConnection();
             urlConnection.getInputStream();
             return true;
         }catch (Exception e){
-            ErrorController.showDialogWithException(FaultsUtils.modifyMessage(e.getMessage()), foiv);
+            ErrorController.showDialogWithException("Адрес сервиса недоступен:" + address);
             return false;
         }
+    }
+
+    private static String getSuffix() {
+        return "?wsdl";
     }
 
     @Override

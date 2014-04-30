@@ -1,8 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
     <SOAP-ENV:Header>
     </SOAP-ENV:Header>
     <SOAP-ENV:Body wsu:Id="body">
-        <SendShortULRequest xmlns="http://ws.unisoft/">
+        <SendFullULRequest xmlns="http://ws.unisoft/">
             <smev:Message xmlns:smev="http://smev.gosuslugi.ru/rev111111">
                 <smev:Sender>
                     <smev:Code>${SenderCode}</smev:Code>
@@ -17,7 +18,7 @@
                     <smev:Name>${SenderName}</smev:Name>
                 </smev:Originator>
                 <smev:TypeCode>${TypeCode}</smev:TypeCode>
-                <smev:Status>${StatusRequest}</smev:Status>
+                <smev:Status>REQUEST</smev:Status>
                 <smev:Date>${Date}</smev:Date>
                 <smev:ExchangeType>${ExchangeType}</smev:ExchangeType>
             <#if TestMsg="on">
@@ -26,27 +27,30 @@
             </smev:Message>
             <smev:MessageData xmlns:smev="http://smev.gosuslugi.ru/rev111111">
                 <smev:AppData wsu:Id="fns-AppData">
-                   <Документ xmlns="http://ws.unisoft/EGRNXX/ShortULReq" ВерсФорм="4.02" ИдДок="${idDoc}">
-                    <#if isInn?? && isInn!='on'>
-                        <#if ogrn?has_content>
-                            <ЗапросЮЛ ИдЗапрос="${idDoc}">
-                                <ОГРН>${ogrn}</ОГРН>
-                            </ЗапросЮЛ>  </#if>
+                <#if NomerDela?has_content>
+                <Документ xmlns="http://ws.unisoft/EGRNXX/FullULReq" ВерсФорм="4.02" ИдДок="${idDoc}" НомерДела="${NomerDela}">
+                <#else>
+                <Документ xmlns="http://ws.unisoft/EGRNXX/FullULReq" ВерсФорм="4.02" ИдДок="${idDoc}">
+                </#if>
 
-                    <#else>
-                        <#if  inn?? && inn?has_content>
-                                <ЗапросЮЛ ИдЗапрос="${idDoc}">
-                                    <ИННЮЛ>${inn}</ИННЮЛ>
-                                </ЗапросЮЛ>
-                        </#if>
-                    </#if>
+                <#if isInn?? && isInn!='on' && ogrn??>
+
+                    <ЗапросЮЛ>
+                        <ОГРН>${ogrn}</ОГРН>
+                    </ЗапросЮЛ>
+
+                <#else>
+
+                    <ЗапросЮЛ>
+                        <ИННЮЛ><#if inn??>${inn}</#if></ИННЮЛ>
+                    </ЗапросЮЛ>
 
 
-                    </Документ>
+                </#if>
+
+                </Документ>
                 </smev:AppData>
             </smev:MessageData>
-        </SendShortULRequest>
+        </SendFullULRequest>
     </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
-
-

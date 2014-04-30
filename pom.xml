@@ -24,6 +24,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.7</version>
+        </dependency>
+        <dependency>
         	<groupId>com.googlecode.json-simple</groupId>
         	<artifactId>json-simple</artifactId>
         	<version>1.1</version>
@@ -84,14 +89,14 @@
             <groupId>org.apache.santuario</groupId>
             <artifactId>xmlsec</artifactId>
             <version>1.4.5</version>
-            <scope>${crypto.scope}</scope>
+            <!--<scope>${crypto.scope}</scope>-->
         </dependency>
 
         <dependency>
             <groupId>xalan</groupId>
             <artifactId>xalan</artifactId>
             <version>2.7.1</version>
-            <scope>${crypto.scope}</scope>
+            <!--<scope>${crypto.scope}</scope>-->
         </dependency>
 
         <dependency>
@@ -113,7 +118,7 @@
         </dependency>
 
 
-        <!--<dependency>
+        <dependency>
             <groupId>ru.CryptoPro.JCP</groupId>
             <artifactId>JCPxml</artifactId>
             <version>1.0.47</version>
@@ -125,7 +130,7 @@
             <artifactId>JCP</artifactId>
             <version>1.0.47</version>
             <scope>${crypto.scope}</scope>
-        </dependency>-->
+        </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -133,11 +138,7 @@
             <version>1.6.1</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>3.7</version>
-        </dependency>
+
 
         <dependency>
             <groupId>ru.atc.smev</groupId>
@@ -214,14 +215,31 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.5.1</version>
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
+
+
             <plugin>
-                <!-- copy all dependencies of your app to target folder-->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>-Dfile.encoding=UTF-8</argLine>
+                </configuration>
+            </plugin>
+            <!--<plugin>
+                &lt;!&ndash; copy all dependencies of your app to target folder&ndash;&gt;
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>2.6</version>
@@ -240,15 +258,12 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.4</version>
                 <configuration>
-                    <!--<descriptors>-->
-                    <!--<descriptor>src/main/assembly/jar-with-dependencies.xml</descriptor>-->
-                    <!--</descriptors>-->
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
@@ -269,6 +284,40 @@
                 </configuration>
             </plugin>
             <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>${exec.mainClass}</mainClass>
+                            <classpathLayoutType>repository</classpathLayoutType>
+                        </manifest>
+                        <manifestEntries>
+                            <JavaFX-Application-Class>${exec.mainClass}</JavaFX-Application-Class>
+                            <Main-Class>${exec.mainClass}</Main-Class>
+                            <JavaFX-Version>${javafx.version}+</JavaFX-Version>
+                            <implementation-version>1.0</implementation-version>
+                            <!--                            <JavaFX-Class-Path>
+                            </JavaFX-Class-Path> -->
+                            <!-- The artifactId (name) of the jfxrt.jar ... see dependency system scope-->
+                            <Class-Path>javafx-${javafx.version}.jar</Class-Path>
+                        </manifestEntries>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-my-jar-with-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>com.zenjava</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>2.0</version>
@@ -276,6 +325,14 @@
                     <mainClass>javafxapp.Main</mainClass>
                 </configuration>
             </plugin>
+
+
         </plugins>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
     </build>
 </project>

@@ -45,7 +45,8 @@ public class TransformDoc {
 
             DocumentBuilder dBuilder = dbf.newDocumentBuilder();
 
-            doc = dBuilder.parse(IOUtils.toInputStream(request));
+            System.out.println(request);
+            doc = dBuilder.parse(IOUtils.toInputStream(request,  "UTF-8"));
             doc.getDocumentElement().normalize();
 
         } catch (ParserConfigurationException | SAXException | IOException e) {

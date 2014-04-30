@@ -259,7 +259,6 @@ public class MainController extends VBox implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
         Settings settings = DatabaseUtil.getSettings();
 
         if (settings != null && settings.getPathFile() != null && !settings.getPathFile().equals("")) {

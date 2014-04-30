@@ -58,14 +58,14 @@ public class DatabaseUtil {
                     "INSERT INTO adapterDetails (id210fz, smevAddress, foiv, adapterName) VALUES ('07UL_short', 'http://192.168.100.96:7777/gateway/services/SID0003245', 'ФНС','Сведения из ЕГРЮЛ(краткие)');" +
                     "INSERT INTO adapterDetails (id210fz, smevAddress, foiv, adapterName) VALUES ('07FL_full', 'http://192.168.100.96:7777/gateway/services/SID0003245', 'ФНС','Сведения из ЕГРИП(полные)');" +
                     "INSERT INTO adapterDetails (id210fz, smevAddress, foiv, adapterName) VALUES ('07UL_full', 'http://192.168.100.96:7777/gateway/services/SID0003245', 'ФНС','Сведения из ЕГРЮЛ(полные)');" +
-                    "INSERT INTO adapterDetails (id210fz, smevAddress, foiv, adapterName) VALUES ('410', 'http://smev-mvf.test.gosuslugi.ru:7777/gateway/services/SID000305', 'МВД','Сведения о судимости');" +
+                    "INSERT INTO adapterDetails (id210fz, smevAddress, foiv, adapterName) VALUES ('410', 'http://smev-mvf.test.gosuslugi.ru:7777/gateway/services/SID0003058', 'МВД','Сведения о судимости');" +
 
                     "INSERT INTO smevfield (name, value) VALUES ('senderCodeMVD', 'KSIR01001');"+
                     "INSERT INTO smevfield (name, value) VALUES ('senderNameMVD', 'Тестовый СИР');"+
                     "INSERT INTO smevfield (name, value) VALUES ('senderCodeFNS', 'KSIR01001');"+
                     "INSERT INTO smevfield (name, value) VALUES ('senderNameFNS', 'Тестовый СИР');"+
 
-                    "INSERT INTO settings (pathFile, key_alias, cert_alias, password) VALUES ('', 'RaUser-2908cdc2-4aff-47c6-9636-d2a98ba3d2b5','RaUser-2908cdc2-4aff-47c6-9636-d2a98ba3d2b5','1234567890');";
+                    "INSERT INTO settings (pathFile, key_alias, cert_alias, password) VALUES ('', '','','');";
             executeUpdate(query);
         }
     }

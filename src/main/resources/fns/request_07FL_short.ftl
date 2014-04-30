@@ -1,9 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
                    xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
     <SOAP-ENV:Header>
     </SOAP-ENV:Header>
     <SOAP-ENV:Body wsu:Id="body">
-        <SendFullFLRequest xmlns="http://ws.unisoft/">
+        <SendShortFLRequest xmlns="http://ws.unisoft/">
             <smev:Message xmlns:smev="http://smev.gosuslugi.ru/rev111111">
                 <smev:Sender>
                     <smev:Code>${SenderCode}</smev:Code>
@@ -27,31 +28,23 @@
             </smev:Message>
             <smev:MessageData xmlns:smev="http://smev.gosuslugi.ru/rev111111">
                 <smev:AppData wsu:Id="fns-AppData">
-                <#if NomerDela?has_content>
-                <Документ xmlns="http://ws.unisoft/EGRNXX/FullFLReq" ВерсФорм="4.02" ИдДок="${idDoc}"
-                          НомерДела="${NomerDela}">
-                <#else>
-                <Документ xmlns="http://ws.unisoft/EGRNXX/FullFLReq" ВерсФорм="4.02" ИдДок="${idDoc}">
-                </#if>
-
-                <#if isInn?? && isInn!='on' && ogrn??>
-
-
-                    <ЗапросИП>
-                        <ОГРНИП>${ogrn}</ОГРНИП>
-                    </ЗапросИП>
-
-
-                <#else>
-
-                    <ЗапросИП>
-                        <ИНН><#if inn??>${inn}</#if></ИНН>
-                    </ЗапросИП>
-                </#if>
-
-                </Документ>
+                    <Документ xmlns="http://ws.unisoft/EGRNXX/ShortFLReq" ВерсФорм="4.02" ИдДок="${idDoc}">
+                    <#if isInn?? && isInn!='on'>
+                        <#if ogrn?has_content>
+                                <ЗапросИП ИдЗапрос="${idDoc}">
+                                    <ОГРНИП>${ogrn}</ОГРНИП>
+                                </ЗапросИП>
+                        </#if>
+                    <#else>
+                        <#if  inn?? && inn?has_content>
+                                <ЗапросИП ИдЗапрос="${idDoc}">
+                                    <ИНН>${inn}</ИНН>
+                                </ЗапросИП>
+                        </#if>
+                    </#if>
+                    </Документ>
                 </smev:AppData>
             </smev:MessageData>
-        </SendFullFLRequest>
+        </SendShortFLRequest>
     </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>

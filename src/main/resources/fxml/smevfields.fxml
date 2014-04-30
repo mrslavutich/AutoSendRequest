@@ -18,7 +18,7 @@
                   <TextField fx:id="addressFNS" alignment="TOP_CENTER" layoutX="121.0" layoutY="157.0" prefHeight="22.0" prefWidth="320.0" promptText="Введите адрес сервиса" text="" />
                   <Label alignment="BASELINE_RIGHT" contentDisplay="RIGHT" layoutX="18.0" layoutY="157.0" prefHeight="22.0" prefWidth="88.0" text="Адрес в РСМЭВ" textAlignment="CENTER" wrapText="true" />
 
-                  <Button layoutX="371.0" layoutY="221.0" mnemonicParsing="false" onAction="#handleSaveSmevFileds" text="Сохранить" />
+                  <Button layoutX="371.0" layoutY="221.0" mnemonicParsing="false" onAction="#handleSaveSmevFiledsFNS" text="Сохранить" />
               </children>
         </AnchorPane>
       </content>
@@ -36,7 +36,7 @@
                   <TextField fx:id="addressMVD" alignment="TOP_CENTER" layoutX="121.0" layoutY="157.0" prefHeight="22.0" prefWidth="320.0" promptText="Введите адрес сервиса" text="" />
                   <Label alignment="BASELINE_RIGHT" contentDisplay="RIGHT" layoutX="18.0" layoutY="157.0" prefHeight="22.0" prefWidth="88.0" text="Адрес в РСМЭВ" textAlignment="CENTER" wrapText="true" />
 
-                  <Button layoutX="371.0" layoutY="221.0" mnemonicParsing="false" onAction="#handleSaveSmevFileds" text="Сохранить" />
+                  <Button layoutX="371.0" layoutY="221.0" mnemonicParsing="false" onAction="#handleSaveSmevFiledsMVD" text="Сохранить" />
               </children>
           </AnchorPane>
       </content>
