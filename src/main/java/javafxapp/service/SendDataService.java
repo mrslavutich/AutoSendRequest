@@ -3,10 +3,12 @@ package javafxapp.service;
 
 import javafxapp.handleFault.Fault;
 import javafxapp.utils.SoapUtils;
+import org.apache.commons.io.FileUtils;
 
 import javax.xml.soap.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.Iterator;
 

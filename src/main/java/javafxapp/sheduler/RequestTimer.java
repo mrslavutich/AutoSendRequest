@@ -36,11 +36,10 @@ public class RequestTimer extends Thread implements IRequestTimer {
             try {
                 while (!started) {
                     this.sleep(10000);
-                    this.started = false;
                 }
                 pingWorkTime();
 
-                System.out.println("+++create new Thread+++");
+                System.out.println("+++start thread+++");
                 if (!seconds.isEmpty()) time = Integer.parseInt(seconds);
                 if (!minutes.isEmpty()) time += Integer.parseInt(minutes) * 60;
                 if (!hours.isEmpty()) time += Integer.parseInt(hours) * 60 * 60;

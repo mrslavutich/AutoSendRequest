@@ -37,7 +37,7 @@ public class ExcelReader {
         readFile(filePath);
 
         List<Pojo> fnsList = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
             HSSFSheet sheet = workbook.getSheetAt(i);
             if (sheet.getSheetName().startsWith(Register.foiv.FNS.getValue() + "_" + nameAdapter)) {
                fillFNSFromExcel(sheet, fnsList);
@@ -50,7 +50,7 @@ public class ExcelReader {
         readFile(filePath);
 
         List<javafxapp.adapter.mvd.Pojo> mvdList = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
             HSSFSheet sheet = workbook.getSheetAt(i);
             if (sheet.getSheetName().contains(Register.foiv.MVD.getValue() + "_" + Register.id410.getNameAdapter())) {
                 fillMVDFromExcel(sheet, mvdList);
@@ -67,7 +67,7 @@ public class ExcelReader {
     }
 
     public static void writeStatus(List<Adapter> adapterList, String filePath) {
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
             HSSFSheet sheet = workbook.getSheetAt(i);
 
                 for (int r = 0; r <= sheet.getLastRowNum(); r++) {

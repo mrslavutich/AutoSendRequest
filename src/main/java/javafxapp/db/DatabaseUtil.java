@@ -197,7 +197,7 @@ public class DatabaseUtil {
 
     public static void saveSettings() {
         String query = "UPDATE settings SET key_alias='" + SettingsController.keyAlias.getText() + "', " +
-                "key_alias='" + SettingsController.certAlias.getText() + "', " +
+                "cert_alias ='" + SettingsController.certAlias.getText() + "', " +
                 "password ='" + SettingsController.password.getText() + "';";
         executeUpdate(query);
     }

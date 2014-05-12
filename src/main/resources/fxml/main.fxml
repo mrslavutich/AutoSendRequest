@@ -51,7 +51,7 @@
                       <Label fx:id="countFNSSentRequests" layoutX="430.0" layoutY="324.0" text="0" />
                       <Label fx:id="countMVDRequests" layoutX="430.0" layoutY="353.0" text="0" />
                       <Label fx:id="countMVDSentRequests" layoutX="430.0" layoutY="378.0" text="0" />
-                      <Label layoutX="87.0" layoutY="311.0" text="ФНС(Сведения из ЕГРИП\ЕГРЮЛ))" />
+                      <Label layoutX="87.0" layoutY="311.0" text="ФНС(Сведения из ЕГРИП\ЕГРЮЛ)" />
                       <Label layoutX="103.0" layoutY="358.0" text="МВД(сведения о судимости)" />
 
                       <Button fx:id="sendRequests" layoutX="287.0" layoutY="423.0" mnemonicParsing="false" onAction="#handleSubmitSendRequests" text="Включить отправку запросов" />

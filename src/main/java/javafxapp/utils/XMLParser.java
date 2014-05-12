@@ -54,7 +54,7 @@ public class XMLParser {
     }
 
     public static String getFaultElement(String xml) throws Exception {
-        Document doc = parseDocFromByte(xml.getBytes());
+        Document doc = parseDocFromByte(xml.getBytes("UTF-8"));
         Element elem = getDocElement(doc, FAULTSTRING);
         if (elem != null) {
             return elem.getTextContent();
@@ -65,8 +65,7 @@ public class XMLParser {
     private static Document parseDocFromByte(byte[] b) {
             try {
                 final DocumentBuilder loader = createDocumentBuilderFactory().newDocumentBuilder();
-                String xmlContent = IOUtils.toString(b, "UTF-8");
-
+                String xmlContent = new String(b, "UTF-8");
                 return loader.parse(IOUtils.toInputStream(xmlContent, "UTF-8"));
             } catch (Exception e) {
 

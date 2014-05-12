@@ -1,9 +1,11 @@
 package javafxapp.utils;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.helpers.XMLUtils;
 
 import javax.xml.soap.*;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -29,7 +31,10 @@ public class SoapUtils {
 
     public static String soapMessageToString(SOAPEnvelope soapEnvelope) throws IOException {
         String envelope = XMLUtils.toString(soapEnvelope);
-        String strMsg = IOUtils.toString(envelope.getBytes(), ENCODING_TYPE);
+        FileUtils.writeStringToFile(new File("test.txt"), envelope);
+        String strMsg = new String(envelope.getBytes(ENCODING_TYPE), ENCODING_TYPE);
+        FileUtils.writeStringToFile(new File("test2.txt"), strMsg);
+
         return strMsg;
     }
 

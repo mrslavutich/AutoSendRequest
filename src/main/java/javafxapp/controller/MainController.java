@@ -174,7 +174,6 @@ public class MainController extends VBox implements Initializable {
                         countReq = Integer.parseInt(countReqField.getText());
                 }
 
-                requestTimer = new RequestTimer();
 
 
                 adapters = DatabaseUtil.findReqReadyToSend(countReq, checkboxFNS.isSelected(), checkboxMVD.isSelected());
@@ -259,6 +258,8 @@ public class MainController extends VBox implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        requestTimer = new RequestTimer();
+
         Settings settings = DatabaseUtil.getSettings();
 
         if (settings != null && settings.getPathFile() != null && !settings.getPathFile().equals("")) {
